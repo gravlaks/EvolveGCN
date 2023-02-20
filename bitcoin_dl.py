@@ -117,7 +117,7 @@ class bitcoin_dataset():
         file = os.path.join(bitcoin_args.folder,bitcoin_args.edges_file)
         with open(file) as f:
             lines = f.read().splitlines()
-        edges = [[float(r) for r in row.split(',')] for row in lines]
+        edges = [[int(float(r)) for r in row.split(',')] for row in lines]
         edges = torch.tensor(edges,dtype = torch.long)
         return edges
 

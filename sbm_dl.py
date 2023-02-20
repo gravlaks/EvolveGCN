@@ -61,7 +61,7 @@ class sbm_dataset():
         file = os.path.join(sbm_args.folder,sbm_args.edges_file)
         with open(file) as f:
             lines = f.read().splitlines()
-        edges = [[float(r) for r in row.split(',')] for row in lines[starting_line:]]
+        edges = [[int(float(r)) for r in row.split(',')] for row in lines[starting_line:]]
         edges = torch.tensor(edges,dtype = torch.long)
         return edges
 

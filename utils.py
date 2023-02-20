@@ -133,7 +133,7 @@ def create_parser():
 def parse_args(parser):
     args = parser.parse_args()
     if args.config_file:
-        data = yaml.load(args.config_file)
+        data = yaml.safe_load(args.config_file)
         delattr(args, 'config_file')
         # print(data)
         arg_dict = args.__dict__
