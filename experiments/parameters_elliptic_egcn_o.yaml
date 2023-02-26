@@ -1,7 +1,7 @@
 data: elliptic_temporal #HELP: arxiv, bitcoin, aml_sim, dbg, elliptic, elliptic_temporal
 elliptic_args:
   folder: ./data/elliptic_temporal
-  tar_file: elliptic_bitcoin_dataset_cont.tar.gz
+  tar_file: elliptic_bitcoin_dataset.tar.xz
   feats_file: elliptic_bitcoin_dataset_cont/elliptic_txs_features.csv
   edges_file: elliptic_bitcoin_dataset_cont/elliptic_txs_edgelist_timed.csv
   classes_file: elliptic_bitcoin_dataset_cont/elliptic_txs_classes.csv

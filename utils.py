@@ -121,7 +121,8 @@ def load_data_from_tar(file, tar_archive, replace_unknow=False, starting_line=1,
     lines=lines.splitlines()
 
     data = [[type_fn(r) for r in row.split(sep)] for row in lines[starting_line:]]
-    data = tensor_const(data)
+    
+    data = tensor_const(data).long()
     #print (file,'data size', data.size())
     return data
 

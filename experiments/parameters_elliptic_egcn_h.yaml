@@ -1,15 +1,15 @@
 data: elliptic_temporal #HELP: arxiv, bitcoin, aml_sim, dbg, elliptic, elliptic_temporal
 elliptic_args:
   folder: ./data/elliptic_temporal
-  tar_file: elliptic_bitcoin_dataset_cont.tar.gz
-  feats_file: elliptic_bitcoin_dataset_cont/elliptic_txs_features.csv
-  edges_file: elliptic_bitcoin_dataset_cont/elliptic_txs_edgelist_timed.csv
-  classes_file: elliptic_bitcoin_dataset_cont/elliptic_txs_classes.csv
-  times_file: elliptic_bitcoin_dataset_cont/elliptic_txs_nodetime.csv
+  tar_file: elliptic_bitcoin_dataset.tar.gz
+  feats_file: data/elliptic_txs_features.csv
+  edges_file: data/elliptic_txs_edgelist_timed.csv
+  classes_file: data/elliptic_txs_classes.csv
+  times_file: data/elliptic_txs_nodetime.csv
   aggr_time: 1
 
 use_cuda: True
-use_logfile: True
+use_logfile: False
 
 model: egcn_h
 
@@ -39,17 +39,17 @@ eval_after_epochs: 5
 adj_mat_time_window: 1  # Time window to create the adj matrix for each timestep. Use None to use all the history (from 0 to t)
 adj_mat_time_window_min: 1
 adj_mat_time_window_max: 10
-num_hist_steps: 5 # number of previous steps used for prediction
+num_hist_steps: 3 # number of previous steps used for prediction
 num_hist_steps_min: 3 # only used if num_hist_steps: None
 num_hist_steps_max: 10 # only used if num_hist_steps: None
 data_loading_params:
   batch_size: 1
   num_workers: 6
 gcn_parameters:
-  feats_per_node: 50
+  feats_per_node: 10
   feats_per_node_min: 30
-  feats_per_node_max: 312
-  layer_1_feats: 76
+  feats_per_node_max: 50
+  layer_1_feats: 10
   layer_1_feats_min: 30
   layer_1_feats_max: 500
   layer_2_feats: None
@@ -57,13 +57,13 @@ gcn_parameters:
   k_top_grcu: 200
   num_layers: 2
   lstm_l1_layers: 1
-  lstm_l1_feats: 125  # only used with sp_lstm_B_trainer
+  lstm_l1_feats: 10  # only used with sp_lstm_B_trainer
   lstm_l1_feats_min: 50
   lstm_l1_feats_max: 500
   lstm_l2_layers: 1 # only used with both sp_lstm_A_trainer and sp_lstm_B_trainer
-  lstm_l2_feats: 400 # only used with both sp_lstm_A_trainer and sp_lstm_B_trainer
+  lstm_l2_feats: 20 # only used with both sp_lstm_A_trainer and sp_lstm_B_trainer
   lstm_l2_feats_same_as_l1: True
-  cls_feats: 510 # Hidden size of the classifier
+  cls_feats: 30 # Hidden size of the classifier
   cls_feats_min: 100
   cls_feats_max: 700
 comments:

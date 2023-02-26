@@ -55,7 +55,7 @@ class Elliptic_Temporal_Dataset():
 
 
 	def load_transactions(self, elliptic_args, tar_archive):
-		data = u.load_data_from_tar(elliptic_args.edges_file, tar_archive, type_fn=float, tensor_const=torch.LongTensor)
+		data = u.load_data_from_tar(elliptic_args.edges_file, tar_archive, type_fn=float, tensor_const=torch.FloatTensor)
 		tcols = u.Namespace({'source': 0,
 							 'target': 1,
 							 'time': 2})
