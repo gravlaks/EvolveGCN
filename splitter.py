@@ -68,7 +68,7 @@ class splitter():
             else:
                 dev = data_split(tasker, start, end, test = True)
 
-            dev = DataLoader(dev,num_workers=args.data_loading_params['num_workers'])
+            dev = DataLoader(dev)#,num_workers=args.data_loading_params['num_workers'])
             
             start = end
             
@@ -79,7 +79,7 @@ class splitter():
             else:
                 test = data_split(tasker, start, end, test = True)
                 
-            test = DataLoader(test,num_workers=args.data_loading_params['num_workers'])
+            test = DataLoader(test)#,num_workers=args.data_loading_params['num_workers'])
             
             print ('Dataset splits sizes:  train',len(train), 'dev',len(dev), 'test',len(test))
             
