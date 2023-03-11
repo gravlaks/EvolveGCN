@@ -49,20 +49,20 @@ class Sp_GAT(torch.nn.Module):
         self.num_layers = args.num_layers
 
         self.w_list = nn.ParameterList()
-        #self.a_list = nn.ParameterList()
+        self.a_list = nn.ParameterList()
         self.alpha = 0.001
-        self.a_t =  Parameter(torch.Tensor(2 * args.layer_1_feats, 1 ))
 
         for i in range(self.num_layers):
             if i==0:
+                a_i = Parameter(torch.Tensor(2 * args.layer_2_feats, 1))
                 w_i = Parameter(torch.Tensor(args.feats_per_node, args.layer_1_feats))
                 u.reset_param(w_i)
             else:
-                #a_i = Parameter(torch.Tensor(2 * args.layer_2_feats, 1))
+                a_i = Parameter(torch.Tensor(2 * args.layer_2_feats, 1))
                 w_i = Parameter(torch.Tensor(args.layer_1_feats, args.layer_2_feats))
                 u.reset_param(w_i)
-            #u.reset_param(a_i)
-            #self.a_list.append(a_i)
+            u.reset_param(a_i)
+            self.a_list.append(a_i)
             self.w_list.append(w_i)
 
 
@@ -86,7 +86,7 @@ class Sp_GAT(torch.nn.Module):
         H1 = last_l.unsqueeze(1).repeat(1,N,1)
         H2 = last_l.unsqueeze(0).repeat(N,1,1)
         attn_input = torch.cat([H1, H2], dim = -1)
-        e = F.leaky_relu((attn_input.matmul(self.a_t)).squeeze(-1), negative_slope = self.alpha) # [N, N]
+        e = F.leaky_relu((attn_input.matmul(self.a_list[0])).squeeze(-1), negative_slope = self.alpha) # [N, N]
         attn_mask = -1e18*torch.ones_like(e)
         masked_e = torch.where(Ahat.to_dense() > 0, e, attn_mask)
         attn_scores = F.softmax(masked_e, dim = -1) # [N, N]
@@ -99,7 +99,20 @@ class Sp_GAT(torch.nn.Module):
         
 
         for i in range(1, self.num_layers):
-            last_l = self.activation(Ahat.matmul(last_l.matmul(self.w_list[i])))
+            last_l = Ahat.matmul(last_l.matmul(self.w_list[i]))
+            
+            H1 = last_l.unsqueeze(1).repeat(1,N,1)
+            H2 = last_l.unsqueeze(0).repeat(N,1,1)
+            attn_input = torch.cat([H1, H2], dim = -1)
+            e = F.leaky_relu((attn_input.matmul(self.a_list[i])).squeeze(-1), negative_slope = self.alpha) # [N, N]
+            attn_mask = -1e18*torch.ones_like(e)
+            masked_e = torch.where(Ahat.to_dense() > 0, e, attn_mask)
+            attn_scores = F.softmax(masked_e, dim = -1) # [N, N]
+
+            h_prime = torch.mm(attn_scores, last_l)
+            last_l = self.activation(h_prime)
+
+
         return last_l
 
 class Sp_Skip_GCN(Sp_GCN):
