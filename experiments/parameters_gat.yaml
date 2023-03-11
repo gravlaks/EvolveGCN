@@ -51,24 +51,24 @@ data_loading_params:
   num_workers: 8
 
 gcn_parameters:
-  feats_per_node: 100
+  feats_per_node: 10
   feats_per_node_min: 50
   feats_per_node_max: 256
-  layer_1_feats: 100
+  layer_1_feats: 10
   layer_1_feats_min: 10
   layer_1_feats_max: 200
-  layer_2_feats: 100
+  layer_2_feats: 10
   layer_2_feats_same_as_l1: True
-  k_top_grcu: 200
+  k_top_grcu: 20
   num_layers: 2
   lstm_l1_layers: 1
-  lstm_l1_feats: 100 # only used with sp_lstm_B_trainer
+  lstm_l1_feats: 10 # only used with sp_lstm_B_trainer
   lstm_l1_feats_min: 10
   lstm_l1_feats_max: 200
   lstm_l2_layers: 1 # only used with both sp_lstm_A_trainer and sp_lstm_B_trainer
   lstm_l2_feats: None # only used with both sp_lstm_A_trainer and sp_lstm_B_trainer
   lstm_l2_feats_same_as_l1: True
-  cls_feats: 100 # Hidden size of the classifier
+  cls_feats: 10 # Hidden size of the classifier
   cls_feats_min: 100
   cls_feats_max: 800
 comments:

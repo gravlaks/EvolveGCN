@@ -49,21 +49,30 @@ class Sp_GAT(torch.nn.Module):
         self.num_layers = args.num_layers
 
         self.w_list = nn.ParameterList()
+        #self.a_list = nn.ParameterList()
+        self.alpha = 0.001
+        self.a_t =  Parameter(torch.Tensor(2 * args.layer_1_feats, 1 ))
+
         for i in range(self.num_layers):
             if i==0:
                 w_i = Parameter(torch.Tensor(args.feats_per_node, args.layer_1_feats))
                 u.reset_param(w_i)
             else:
+                #a_i = Parameter(torch.Tensor(2 * args.layer_2_feats, 1))
                 w_i = Parameter(torch.Tensor(args.layer_1_feats, args.layer_2_feats))
                 u.reset_param(w_i)
+            #u.reset_param(a_i)
+            #self.a_list.append(a_i)
             self.w_list.append(w_i)
 
 
     def forward(self,A_list, Nodes_list, nodes_mask_list):
         node_feats = Nodes_list[-1]
+
         #A_list: T, each element sparse tensor
         #take only last adj matrix in time
         Ahat = A_list[-1]
+        N, _ = Ahat.shape
         #Ahat: NxN ~ 30k
         #sparse multiplication
 
@@ -71,12 +80,22 @@ class Sp_GAT(torch.nn.Module):
         # self.node_embs = Nxk
         #
         # note(bwheatman, tfk): change order of matrix multiply
-        last_l = self.activation(Ahat.matmul(node_feats.matmul(self.w_list[0])))
-       
-        #(1000, 100) = nXK
-        print(last_l.shape)
+        last_l = Ahat.matmul(node_feats.matmul(self.w_list[0]))
 
-        raise Exception
+
+        H1 = last_l.unsqueeze(1).repeat(1,N,1)
+        H2 = last_l.unsqueeze(0).repeat(N,1,1)
+        attn_input = torch.cat([H1, H2], dim = -1)
+        e = F.leaky_relu((attn_input.matmul(self.a_t)).squeeze(-1), negative_slope = self.alpha) # [N, N]
+        attn_mask = -1e18*torch.ones_like(e)
+        masked_e = torch.where(Ahat.to_dense() > 0, e, attn_mask)
+        attn_scores = F.softmax(masked_e, dim = -1) # [N, N]
+
+        h_prime = torch.mm(attn_scores, last_l)
+        last_l = self.activation(h_prime)
+
+
+
         
 
         for i in range(1, self.num_layers):
