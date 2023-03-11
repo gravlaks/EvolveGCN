@@ -8,6 +8,7 @@ import math
 
 class Sp_GCN(torch.nn.Module):
     def __init__(self,args,activation):
+        print("Initializing gcn")
         super().__init__()
         self.activation = activation
         self.num_layers = args.num_layers
@@ -40,6 +41,47 @@ class Sp_GCN(torch.nn.Module):
             last_l = self.activation(Ahat.matmul(last_l.matmul(self.w_list[i])))
         return last_l
 
+class Sp_GAT(torch.nn.Module):
+    def __init__(self,args,activation):
+        print("Initializing gat")
+        super().__init__()
+        self.activation = activation
+        self.num_layers = args.num_layers
+
+        self.w_list = nn.ParameterList()
+        for i in range(self.num_layers):
+            if i==0:
+                w_i = Parameter(torch.Tensor(args.feats_per_node, args.layer_1_feats))
+                u.reset_param(w_i)
+            else:
+                w_i = Parameter(torch.Tensor(args.layer_1_feats, args.layer_2_feats))
+                u.reset_param(w_i)
+            self.w_list.append(w_i)
+
+
+    def forward(self,A_list, Nodes_list, nodes_mask_list):
+        node_feats = Nodes_list[-1]
+        #A_list: T, each element sparse tensor
+        #take only last adj matrix in time
+        Ahat = A_list[-1]
+        #Ahat: NxN ~ 30k
+        #sparse multiplication
+
+        # Ahat NxN
+        # self.node_embs = Nxk
+        #
+        # note(bwheatman, tfk): change order of matrix multiply
+        last_l = self.activation(Ahat.matmul(node_feats.matmul(self.w_list[0])))
+       
+        #(1000, 100) = nXK
+        print(last_l.shape)
+
+        raise Exception
+        
+
+        for i in range(1, self.num_layers):
+            last_l = self.activation(Ahat.matmul(last_l.matmul(self.w_list[i])))
+        return last_l
 
 class Sp_Skip_GCN(Sp_GCN):
     def __init__(self,args,activation):

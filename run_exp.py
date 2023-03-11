@@ -135,6 +135,8 @@ def build_gcn(args,tasker):
 	gcn_args.feats_per_node = tasker.feats_per_node
 	if args.model == 'gcn':
 		return mls.Sp_GCN(gcn_args,activation = torch.nn.RReLU()).to(args.device)
+	if args.model == 'gat':
+		return mls.Sp_GAT(gcn_args,activation = torch.nn.RReLU()).to(args.device)
 	elif args.model == 'skipgcn':
 		return mls.Sp_Skip_GCN(gcn_args,activation = torch.nn.RReLU()).to(args.device)
 	elif args.model == 'skipfeatsgcn':
