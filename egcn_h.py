@@ -3,10 +3,10 @@ import torch
 from torch.nn.parameter import Parameter
 import torch.nn as nn
 import math
-
+import torch.functional as F
 
 class EGCN(torch.nn.Module):
-    def __init__(self, args, activation, device='cpu', skipfeats=False):
+    def __init__(self, args, activation, device='cpu', skipfeats=False, gat=False):
         super().__init__()
         GRCU_args = u.Namespace({})
 
@@ -21,8 +21,10 @@ class EGCN(torch.nn.Module):
             GRCU_args = u.Namespace({'in_feats' : feats[i-1],
                                      'out_feats': feats[i],
                                      'activation': activation})
-
-            grcu_i = GRCU(GRCU_args)
+            if gat:
+                grcu_i = GRCU_GAT(GRCU_args)
+            else:
+                grcu_i = GRCU(GRCU_args)
             #print (i,'grcu_i', grcu_i)
             self.GRCU_layers.append(grcu_i.to(self.device))
             self._parameters.extend(list(self.GRCU_layers[-1].parameters()))
@@ -73,6 +75,63 @@ class GRCU(torch.nn.Module):
             out_seq.append(node_embs)
 
         return out_seq
+
+
+class GRCU_GAT(torch.nn.Module):
+    def __init__(self,args):
+        super().__init__()
+        self.args = args
+        cell_args = u.Namespace({})
+        cell_args.rows = args.in_feats
+        cell_args.cols = args.out_feats
+
+        self.evolve_weights = mat_GRU_cell(cell_args)
+
+        self.activation = self.args.activation
+        self.GCN_init_weights = Parameter(torch.Tensor(self.args.in_feats,self.args.out_feats))
+        self.reset_param(self.GCN_init_weights)
+
+        self.alpha = 0.001
+
+        self.a_i = Parameter(torch.Tensor(2 * args.out_feats, 1))
+        u.reset_param(self.a_i)
+
+    def reset_param(self,t):
+        #Initialize based on the number of columns
+        stdv = 1. / math.sqrt(t.size(1))
+        t.data.uniform_(-stdv,stdv)
+
+    def forward(self,A_list,node_embs_list,mask_list):
+        GCN_weights = self.GCN_init_weights
+        out_seq = []
+        for t,Ahat in enumerate(A_list):
+            node_embs = node_embs_list[t]
+            #first evolve the weights from the initial and use the new weights with the node_embs
+            GCN_weights = self.evolve_weights(GCN_weights,node_embs,mask_list[t])
+
+
+
+
+            node_embs = Ahat.matmul(node_embs.matmul(GCN_weights))
+
+            N = Ahat.shape[0]
+            H1 = node_embs.unsqueeze(1).repeat(1,N,1)
+            H2 = node_embs.unsqueeze(0).repeat(N,1,1)
+            attn_input = torch.cat([H1, H2], dim = -1)
+            e = F.leaky_relu((attn_input.matmul(self.a_I)).squeeze(-1), negative_slope = self.alpha) # [N, N]
+            attn_mask = -1e18*torch.ones_like(e)
+            masked_e = torch.where(Ahat.to_dense() > 0, e, attn_mask)
+            attn_scores = F.softmax(masked_e, dim = -1) # [N, N]
+
+            h_prime = torch.mm(attn_scores, node_embs)
+            node_embs = self.activation(h_prime)
+            out_seq.append(node_embs)
+
+        return out_seq
+
+
+
+
 
 class mat_GRU_cell(torch.nn.Module):
     def __init__(self,args):
