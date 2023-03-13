@@ -1,6 +1,9 @@
 data/
-log/
-!log/file_so_not_ignored.txt
+
+!/log
+/log/*
+!/log/file_so_not_ignored.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
