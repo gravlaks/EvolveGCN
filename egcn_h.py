@@ -3,7 +3,8 @@ import torch
 from torch.nn.parameter import Parameter
 import torch.nn as nn
 import math
-import torch.functional as F
+from torch.nn import functional as F
+
 
 class EGCN(torch.nn.Module):
     def __init__(self, args, activation, device='cpu', skipfeats=False, gat=False):
@@ -118,7 +119,7 @@ class GRCU_GAT(torch.nn.Module):
             H1 = node_embs.unsqueeze(1).repeat(1,N,1)
             H2 = node_embs.unsqueeze(0).repeat(N,1,1)
             attn_input = torch.cat([H1, H2], dim = -1)
-            e = F.leaky_relu((attn_input.matmul(self.a_I)).squeeze(-1), negative_slope = self.alpha) # [N, N]
+            e = F.leaky_relu((attn_input.matmul(self.a_i)).squeeze(-1), negative_slope = self.alpha) # [N, N]
             attn_mask = -1e18*torch.ones_like(e)
             masked_e = torch.where(Ahat.to_dense() > 0, e, attn_mask)
             attn_scores = F.softmax(masked_e, dim = -1) # [N, N]
