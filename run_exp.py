@@ -155,6 +155,8 @@ def build_gcn(args,tasker):
 			return egcn.EGCN(gcn_args, activation = torch.nn.RReLU()).to(args.device)
 		elif args.model == 'egcn_h':
 			return egcn_h.EGCN(gcn_args, activation = torch.nn.RReLU(), device = args.device)
+		elif args.model == 'egcn_h_gat':
+			return egcn_h.EGCN(gcn_args, activation = torch.nn.RReLU(), device = args.device, gat=True)
 		elif args.model == 'skipfeatsegcn_h':
 			return egcn_h.EGCN(gcn_args, activation = torch.nn.RReLU(), device = args.device, skipfeats=True)
 		elif args.model == 'egcn_o':
