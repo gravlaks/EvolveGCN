@@ -83,18 +83,14 @@ class GAT_GCN(torch.nn.Module):
         u.reset_param(self.w_a)
         self.alpha = 0.001
 
-
-
     def forward(self, node_feats, Ahat):
         N = Ahat.shape[0]
         h_prime = node_feats.matmul(self.w) 
         h_reduced = h_prime.matmul(self.w_a)
-        # H1 = torch.linalg.norm(h_prime, axis=-1, keepdim=True).unsqueeze(1).repeat(1,N,1)
-        # H2 = torch.linalg.norm(h_prime, axis=-1, keepdim=True).unsqueeze(0).repeat(N,1,1)
         H1 = h_reduced.unsqueeze(1).repeat(1,N,1)
         H2 = h_reduced.unsqueeze(0).repeat(N,1,1)
         attn_input = torch.cat([H1, H2], dim = -1) # (N, N, F)
-        e = F.leaky_relu((attn_input.matmul(self.a)).squeeze(-1), negative_slope = self.alpha) # [N, N]
+        e = attn_input.matmul(self.a).squeeze(-1) # [N, N]
         attn_mask = -1e18*torch.ones_like(e)
         masked_e = torch.where(Ahat.to_dense() > 0, e, attn_mask)
         attn_scores = F.softmax(masked_e, dim = -1) # [N, N]
