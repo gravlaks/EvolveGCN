@@ -10,7 +10,7 @@ sbm50_args:
 use_cuda: True
 use_logfile: False # If True save the output in a log file, if False in stdout
 
-model: egcn_h #HELP: gcn
+model: egcn_h_gat #HELP: gcn
            #      gruA
            #      gruB
            #      egcn_h
