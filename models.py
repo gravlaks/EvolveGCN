@@ -48,72 +48,61 @@ class Sp_GAT(torch.nn.Module):
         self.activation = activation
         self.num_layers = args.num_layers
 
-        self.w_list = nn.ParameterList()
-        self.a_list = nn.ParameterList()
-        self.alpha = 0.001
+        self.layers = nn.ModuleList()
 
         for i in range(self.num_layers):
             if i==0:
-                a_i = Parameter(torch.Tensor(2 * args.layer_2_feats, 1))
-                w_i = Parameter(torch.Tensor(args.feats_per_node, args.layer_1_feats))
-                u.reset_param(w_i)
+                layer = GAT_GCN(self.activation, in_features= args.feats_per_node, out_features=args.layer_1_feats)
             else:
-                a_i = Parameter(torch.Tensor(2 * args.layer_2_feats, 1))
-                w_i = Parameter(torch.Tensor(args.layer_1_feats, args.layer_2_feats))
-                u.reset_param(w_i)
-            u.reset_param(a_i)
-            self.a_list.append(a_i)
-            self.w_list.append(w_i)
+                layer = GAT_GCN(self.activation, in_features= args.layer_1_feats, out_features=args.layer_2_feats)
+
+            self.layers.append(layer)
 
 
     def forward(self,A_list, Nodes_list, nodes_mask_list):
-        node_feats = Nodes_list[-1]
 
-        #A_list: T, each element sparse tensor
-        #take only last adj matrix in time
+        out = Nodes_list[-1]
         Ahat = A_list[-1]
-        N, _ = Ahat.shape
-        #Ahat: NxN ~ 30k
-        #sparse multiplication
+        for l in self.layers:
+            out = l(out, Ahat) 
+        return out
+        
+    
 
-        # Ahat NxN
-        # self.node_embs = Nxk
-        #
-        # note(bwheatman, tfk): change order of matrix multiply
-        last_l = Ahat.matmul(node_feats.matmul(self.w_list[0]))
+class GAT_GCN(torch.nn.Module):
+    def __init__(self, activation, in_features, out_features):
+        super().__init__()
+        self.activation = activation
+        attention_dim = 2
+        self.w = Parameter(torch.Tensor(in_features, out_features))
+        self.w_a = Parameter(torch.Tensor(out_features, attention_dim))
+        self.a = Parameter(torch.Tensor(2*attention_dim, 1))
+
+        u.reset_param(self.w)
+        u.reset_param(self.a)
+        u.reset_param(self.w_a)
+        self.alpha = 0.001
 
 
-        H1 = last_l.unsqueeze(1).repeat(1,N,1)
-        H2 = last_l.unsqueeze(0).repeat(N,1,1)
-        attn_input = torch.cat([H1, H2], dim = -1)
-        e = F.leaky_relu((attn_input.matmul(self.a_list[0])).squeeze(-1), negative_slope = self.alpha) # [N, N]
+
+    def forward(self, node_feats, Ahat):
+        N = Ahat.shape[0]
+        h_prime = node_feats.matmul(self.w) 
+        h_reduced = h_prime.matmul(self.w_a)
+        # H1 = torch.linalg.norm(h_prime, axis=-1, keepdim=True).unsqueeze(1).repeat(1,N,1)
+        # H2 = torch.linalg.norm(h_prime, axis=-1, keepdim=True).unsqueeze(0).repeat(N,1,1)
+        H1 = h_reduced.unsqueeze(1).repeat(1,N,1)
+        H2 = h_reduced.unsqueeze(0).repeat(N,1,1)
+        attn_input = torch.cat([H1, H2], dim = -1) # (N, N, F)
+        e = F.leaky_relu((attn_input.matmul(self.a)).squeeze(-1), negative_slope = self.alpha) # [N, N]
         attn_mask = -1e18*torch.ones_like(e)
         masked_e = torch.where(Ahat.to_dense() > 0, e, attn_mask)
         attn_scores = F.softmax(masked_e, dim = -1) # [N, N]
 
-        h_prime = torch.mm(attn_scores, last_l)
-        last_l = self.activation(h_prime)
+        h_prime = torch.mm(attn_scores, h_prime)
+        out = self.activation(h_prime)
+        return out
 
-
-
-        
-
-        for i in range(1, self.num_layers):
-            last_l = Ahat.matmul(last_l.matmul(self.w_list[i]))
-            
-            H1 = last_l.unsqueeze(1).repeat(1,N,1)
-            H2 = last_l.unsqueeze(0).repeat(N,1,1)
-            attn_input = torch.cat([H1, H2], dim = -1)
-            e = F.leaky_relu((attn_input.matmul(self.a_list[i])).squeeze(-1), negative_slope = self.alpha) # [N, N]
-            attn_mask = -1e18*torch.ones_like(e)
-            masked_e = torch.where(Ahat.to_dense() > 0, e, attn_mask)
-            attn_scores = F.softmax(masked_e, dim = -1) # [N, N]
-
-            h_prime = torch.mm(attn_scores, last_l)
-            last_l = self.activation(h_prime)
-
-
-        return last_l
 
 class Sp_Skip_GCN(Sp_GCN):
     def __init__(self,args,activation):

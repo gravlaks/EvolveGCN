@@ -94,7 +94,7 @@ class GRCU_GAT(torch.nn.Module):
 
         self.alpha = 0.001
 
-        self.a_i = Parameter(torch.Tensor(2 * args.out_feats, 1))
+        self.a_i = Parameter(torch.Tensor(2, 1))
         u.reset_param(self.a_i)
 
     def reset_param(self,t):
@@ -116,8 +116,8 @@ class GRCU_GAT(torch.nn.Module):
             node_embs = Ahat.matmul(node_embs.matmul(GCN_weights))
 
             N = Ahat.shape[0]
-            H1 = node_embs.unsqueeze(1).repeat(1,N,1)
-            H2 = node_embs.unsqueeze(0).repeat(N,1,1)
+            H1 = torch.linalg.norm(node_embs, axis=-1, keepdim=True).unsqueeze(1).repeat(1,N,1)
+            H2 = torch.linalg.norm(node_embs, axis=-1, keepdim=True).unsqueeze(0).repeat(N,1,1)
             attn_input = torch.cat([H1, H2], dim = -1)
             e = F.leaky_relu((attn_input.matmul(self.a_i)).squeeze(-1), negative_slope = self.alpha) # [N, N]
             attn_mask = -1e18*torch.ones_like(e)

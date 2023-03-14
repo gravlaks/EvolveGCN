@@ -4,6 +4,7 @@ import logger
 import time
 import pandas as pd
 import numpy as np
+from tqdm import tqdm
 
 class Trainer():
         def __init__(self,args, splitter, gcn, classifier, comp_loss, dataset, num_classes):
@@ -90,7 +91,7 @@ class Trainer():
                 self.logger.log_epoch_start(epoch, len(split), set_name, minibatch_log_interval=log_interval)
 
                 torch.set_grad_enabled(grad)
-                for s in split:
+                for s in tqdm(split):
                         if self.tasker.is_static:
                                 s = self.prepare_static_sample(s)
                         else:

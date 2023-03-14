@@ -9,13 +9,13 @@ sbm50_args:
 use_cuda: True
 use_logfile: True
 
-model: egcn_h
+model: egcn_h_gat
 
 task: link_pred
 
 class_weights: [ 0.1, 0.9]
 use_2_hot_node_feats: False
-use_1_hot_node_feats: True
+use_1_hot_node_feats: False
 save_node_embeddings: False
 
 train_proportion: 0.7
@@ -37,7 +37,7 @@ early_stop_patience: 50
 
 eval_after_epochs: 5
 adj_mat_time_window: 1  # Time window to create the adj matrix for each timestep. Use None to use all the history (from 0 to t)
-num_hist_steps: 3 # number of previous steps used for prediction
+num_hist_steps: 5 # number of previous steps used for prediction
 num_hist_steps_min: 2 # only used if num_hist_steps: None
 num_hist_steps_max: 10 # only used if num_hist_steps: None
 
