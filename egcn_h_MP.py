@@ -10,7 +10,7 @@ import torch_scatter
     
 class GAT_MP(MessagePassing):
 
-    def __init__(self, out_channels, heads = 1,
+    def __init__(self, out_channels, heads = 2,
                  negative_slope = 0.2, dropout = 0., **kwargs):
         super(GAT_MP, self).__init__(node_dim=0, **kwargs)
 
@@ -20,8 +20,8 @@ class GAT_MP(MessagePassing):
         self.dropout = dropout
 
 
-        self.att_l = Parameter(torch.zeros((1, heads, out_channels)))
-        self.att_r = Parameter(torch.zeros((1, heads, out_channels)))
+        self.att_l = Parameter(torch.zeros((1, heads, out_channels/heads)))
+        self.att_r = Parameter(torch.zeros((1, heads, out_channels/heads)))
         print("Shape", self.att_l.shape)
         self.reset_parameters()
 
@@ -43,7 +43,7 @@ class GAT_MP(MessagePassing):
         print("edge index", edge_index.shape)
         print("weights", weights.shape)
         print("matmul temp", (x.matmul(weights)).shape )
-        h_prime = x.matmul(weights).view((N, H, C))
+        h_prime = x.matmul(weights).view((N, H, C//H))
         
         alpha_l = torch.sum(h_prime*self.att_l, dim=-1)
         alpha_r = torch.sum(h_prime*self.att_r, dim=-1)
