@@ -34,28 +34,12 @@ class GAT_MP(MessagePassing):
     def forward(self, x, edge_index, size = None, weights=None):
         
 
-        ############################################################################
-        # TODO: Your code here! 
-        # Implement message passing, as well as any pre- and post-processing (our update rule).
-        # 1. First apply linear transformation to node embeddings, and split that 
-        #    into multiple heads. We use the same representations for source and
-        #    target nodes, but apply different linear weights (W_l and W_r)
-        # 2. Calculate alpha vectors for central nodes (alpha_l) and neighbor nodes (alpha_r).
-        # 3. Call propagate function to conduct the message passing. 
-        #    3.1 Remember to pass alpha = (alpha_l, alpha_r) as a parameter.
-        #    3.2 See there for more information: https://pytorch-geometric.readthedocs.io/en/latest/notes/create_gnn.html
-        # 4. Transform the output back to the shape of [N, H * C].
-        # Our implementation is ~5 lines, but don't worry if you deviate from this.
-
-
-        ############################################################################
-        
         H, C = self.heads, self.out_channels
 
         
 
         N = x.shape[0]
-        h_prime = x.matmul(weights) 
+        h_prime = x.matmul(weights).view((N, H, C))
         
         alpha_l = torch.sum(h_prime*self.att_l, dim=-1)
         alpha_r = torch.sum(h_prime*self.att_r, dim=-1)
