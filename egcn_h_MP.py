@@ -1,4 +1,5 @@
 import torch
+print(torch.__version__)
 from torch.nn.parameter import Parameter
 from torch.nn import functional as F
 import utils as u
@@ -9,11 +10,10 @@ import torch_scatter
     
 class GAT_MP(MessagePassing):
 
-    def __init__(self, in_channels, out_channels, heads = 2,
+    def __init__(self, out_channels, heads = 2,
                  negative_slope = 0.2, dropout = 0., **kwargs):
         super(GAT_MP, self).__init__(node_dim=0, **kwargs)
 
-        self.in_channels = in_channels
         self.out_channels = out_channels
         self.heads = heads
         self.negative_slope = negative_slope
@@ -70,20 +70,6 @@ class GAT_MP(MessagePassing):
 
     def message(self,index, x_j, alpha_j, alpha_i, ptr, size_i):
 
-        ############################################################################
-        # TODO: Your code here! 
-        # Implement your message function. Putting the attention in message 
-        # instead of in update is a little tricky.
-        # 1. Calculate the final attention weights using alpha_i and alpha_j,
-        #    and apply leaky Relu.
-        # 2. Calculate softmax over the neighbor nodes for all the nodes. Use 
-        #    torch_geometric.utils.softmax instead of the one in Pytorch.
-        # 3. Apply dropout to attention weights (alpha).
-        # 4. Multiply embeddings and attention weights. As a sanity check, the output
-        #    should be of shape [E, H, C].
-        # 5. ptr (LongTensor, optional): If given, computes the softmax based on
-        #    sorted inputs in CSR representation. You can simply pass it to softmax.
-        # Our implementation is ~4-5 lines, but don't worry if you deviate from this.
         E, H, C = self.in_channels, self.heads, self.out_channels
        
         
