@@ -10,7 +10,7 @@ import torch_scatter
     
 class GAT_MP(MessagePassing):
 
-    def __init__(self, out_channels, heads = 2,
+    def __init__(self, out_channels, heads = 1,
                  negative_slope = 0.2, dropout = 0., **kwargs):
         super(GAT_MP, self).__init__(node_dim=0, **kwargs)
 
