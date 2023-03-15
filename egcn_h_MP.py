@@ -44,7 +44,7 @@ class GAT_MP(MessagePassing):
 
          
         out = self.propagate(edge_index=edge_index, x=(h_prime, h_prime), alpha=(alpha_l, alpha_r), size=size)
-        out = out.view((-1, H))
+        out = out.view((-1, C))
         
 
         return out
