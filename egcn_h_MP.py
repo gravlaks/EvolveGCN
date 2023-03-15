@@ -58,7 +58,6 @@ class GAT_MP(MessagePassing):
 
     def message(self,index, x_j, alpha_j, alpha_i, ptr, size_i):
 
-        E, H, C = self.in_channels, self.heads, self.out_channels
        
         
         final_attention_weights = torch.add(alpha_i, alpha_j)
