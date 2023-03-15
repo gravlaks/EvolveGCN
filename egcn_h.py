@@ -101,7 +101,7 @@ class GRCU_GAT(torch.nn.Module):
         self.layers = nn.ModuleList()
 
         
-        self.gat_layer = GAT_MP(self.activation, out_channels=self.args.out_feats)
+        self.gat_layer = GAT_MP(out_channels=self.args.out_feats)
         
 
     def reset_param(self,t):
