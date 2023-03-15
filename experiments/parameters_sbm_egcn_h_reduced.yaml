@@ -59,7 +59,7 @@ gcn_parameters:
   layer_1_feats_max: 200
   layer_2_feats: 8
   layer_2_feats_same_as_l1: True
-  k_top_grcu: 200
+  k_top_grcu: 50
   num_layers: 2
   lstm_l1_layers: 1
   lstm_l1_feats: 20 # only used with sp_lstm_B_trainer
