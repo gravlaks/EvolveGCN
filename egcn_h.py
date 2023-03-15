@@ -3,6 +3,7 @@ import torch
 from torch.nn.parameter import Parameter
 import torch.nn as nn
 import math
+from egcn_h_MP import GAT, GAT_MP
 from torch.nn import functional as F
 
 class EGCN(torch.nn.Module):
@@ -76,33 +77,7 @@ class GRCU(torch.nn.Module):
 
         return out_seq
     
-class GAT_GCN_Evolve(torch.nn.Module):
-    def __init__(self, activation, out_features):
-        super().__init__()
-        self.activation = activation
-        attention_dim = 2
-        self.w_a = Parameter(torch.Tensor(out_features, attention_dim))
-        self.a = Parameter(torch.Tensor(2*attention_dim, 1))
 
-        u.reset_param(self.w_a)
-        u.reset_param(self.a)
-        self.alpha = 0.001
-
-    def forward(self, node_feats, Ahat, w):
-        N = Ahat.shape[0]
-        h_prime = node_feats.matmul(w) 
-        h_reduced = h_prime.matmul(self.w_a)
-        H1 = h_reduced.unsqueeze(1).repeat(1,N,1)
-        H2 = h_reduced.unsqueeze(0).repeat(N,1,1)
-        attn_input = torch.cat([H1, H2], dim = -1) # (N, N, F)
-        e = attn_input.matmul(self.a).squeeze(-1) # [N, N]
-        attn_mask = -1e18*torch.ones_like(e)
-        masked_e = torch.where(Ahat.to_dense() > 0, e, attn_mask)
-        attn_scores = F.softmax(masked_e, dim = -1) # [N, N]
-
-        h_prime = torch.mm(attn_scores, h_prime)
-        out = self.activation(h_prime)
-        return out
 
 
 class GRCU_GAT(torch.nn.Module):
@@ -126,7 +101,7 @@ class GRCU_GAT(torch.nn.Module):
         self.layers = nn.ModuleList()
 
         
-        self.gat_layer = GAT_GCN_Evolve(self.activation,  out_features=self.args.out_feats)
+        self.gat_layer = GAT_MP(self.activation,  out_features=self.args.out_feats)
         
 
     def reset_param(self,t):
@@ -142,8 +117,9 @@ class GRCU_GAT(torch.nn.Module):
             #first evolve the weights from the initial and use the new weights with the node_embs
             GCN_weights = self.evolve_weights(GCN_weights,node_embs,mask_list[t])
 
-
-            node_embs = self.gat_layer(node_embs, Ahat, GCN_weights)
+            edge_index = Ahat.nonzero().t().contiguous()
+            #node_embs = self.gat_layer(node_embs, Ahat, GCN_weights)
+            node_embs = self.gat_layer(node_embs, edge_index, weights=GCN_weights)
 
             out_seq.append(node_embs)
             
