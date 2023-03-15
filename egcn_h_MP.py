@@ -22,7 +22,6 @@ class GAT_MP(MessagePassing):
 
         self.att_l = Parameter(torch.zeros((1, heads, out_channels//heads)))
         self.att_r = Parameter(torch.zeros((1, heads, out_channels//heads)))
-        print("Shape", self.att_l.shape)
         self.reset_parameters()
 
 
@@ -38,11 +37,6 @@ class GAT_MP(MessagePassing):
 
         N = x.shape[0]
 
-        print("HCN", H, C, N)
-        print("x", x.shape)
-        print("edge index", edge_index.shape)
-        print("weights", weights.shape)
-        print("matmul temp", (x.matmul(weights)).shape )
         h_prime = x.matmul(weights).view((N, H, C//H))
         
         alpha_l = torch.sum(h_prime*self.att_l, dim=-1)
