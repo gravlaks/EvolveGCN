@@ -37,7 +37,7 @@ class GAT_MP(MessagePassing):
 
         N = x.shape[0]
 
-        h_prime = x.matmul(weights).view((N, H//C, C))
+        h_prime = x.matmul(weights).view((N, H, C//H))
         
         alpha_l = torch.sum(h_prime*self.att_l, dim=-1)
         alpha_r = torch.sum(h_prime*self.att_r, dim=-1)
