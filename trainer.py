@@ -96,7 +96,7 @@ class Trainer():
                                 s = self.prepare_static_sample(s)
                         else:
                                 s = self.prepare_sample(s)
-                        edge_indices = [Ahat.nonzero().t().contiguous() for Ahat in s.hist_adj_list]
+                        edge_indices = [Ahat.to_dense().nonzero().t().contiguous() for Ahat in s.hist_adj_list]
 
                         predictions, nodes_embs = self.predict(edge_indices,
                                                                                                    s.hist_ndFeats_list,
