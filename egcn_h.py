@@ -117,7 +117,6 @@ class GRCU_GAT(torch.nn.Module):
             #first evolve the weights from the initial and use the new weights with the node_embs
             GCN_weights = self.evolve_weights(GCN_weights,node_embs,mask_list[t])
 
-            edge_index = Ahat.nonzero().t().contiguous()
             #node_embs = self.gat_layer(node_embs, Ahat, GCN_weights)
             node_embs = self.gat_layer(node_embs, edge_index, weights=GCN_weights)
 
