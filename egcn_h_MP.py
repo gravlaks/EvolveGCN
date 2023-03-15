@@ -20,8 +20,8 @@ class GAT_MP(MessagePassing):
         self.dropout = dropout
 
 
-        self.att_l = Parameter(torch.zeros((1, heads, out_channels/heads)))
-        self.att_r = Parameter(torch.zeros((1, heads, out_channels/heads)))
+        self.att_l = Parameter(torch.zeros((1, heads, out_channels//heads)))
+        self.att_r = Parameter(torch.zeros((1, heads, out_channels//heads)))
         print("Shape", self.att_l.shape)
         self.reset_parameters()
 
