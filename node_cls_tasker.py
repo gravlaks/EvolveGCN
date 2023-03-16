@@ -153,6 +153,7 @@ class Static_Node_Cls_Tasker(Node_Cls_Tasker):
 		self.is_static = True
 
 	def get_sample(self,idx,test):
+		raise Exception("only link")
 		#print ('self.adj_matrix',self.adj_matrix.size())
 		idx=int(idx)
 		#node_feats = self.data.node_feats_dict[idx]
