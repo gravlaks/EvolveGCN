@@ -153,13 +153,14 @@ class Trainer():
         def prepare_sample(self,sample):
                 sample = u.Namespace(sample)
                 for i,adj in enumerate(sample.hist_adj_list):
+                        print("adj before sparse", adj.shape)
                         adj = u.sparse_prepare_tensor(adj,torch_size = [self.num_nodes]).to_dense().nonzero().t().contiguous() 
                         sample.hist_adj_list[i] = adj.to(self.args.device)
 
                         nodes = self.tasker.prepare_node_feats(sample.hist_ndFeats_list[i])
                         print("adj", adj.shape)
                         print("nodes", nodes.shape)
-                        
+
 
                         
                         sample.hist_ndFeats_list[i] = nodes.to(self.args.device)

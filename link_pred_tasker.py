@@ -118,7 +118,7 @@ class Link_Pred_Tasker():
 								   time = i,
 								   weighted = True,
 								   time_window = self.args.adj_mat_time_window)
-
+			print("cur adj get_sample", cur_adj.shape)
 			if self.args.smart_neg_sampling:
 				existing_nodes.append(cur_adj['idx'].unique())
 			else:
@@ -127,7 +127,7 @@ class Link_Pred_Tasker():
 			node_mask = tu.get_node_mask(cur_adj, self.data.num_nodes)
 
 			node_feats = self.get_node_feats(cur_adj)
-
+			
 			cur_adj = tu.normalize_adj(adj = cur_adj, num_nodes = self.data.num_nodes)
 
 			hist_adj_list.append(cur_adj)
