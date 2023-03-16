@@ -1,4 +1,4 @@
-data: bitcoin_otc  # bitcoinalpha bitcoinotc
+data: bitcoinotc  # bitcoinalpha bitcoinotc
 
 bitcoinotc_args:
   folder: ./data/
