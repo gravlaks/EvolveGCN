@@ -17,11 +17,11 @@ class bitcoin_dataset():
         num_nodes = max(edges[:, 0].max().item(), edges[:, 1].max().item())
         print('num nodes', num_nodes)
         edges = self.make_contigous_node_ids(edges)
-        num_nodes = edges[:,[self.ecols.FromNodeId,
-                            self.ecols.ToNodeId]].unique().size(0)
-        print("num nodes", num_nodes)
-        num_nodes = max(edges[:, 0].max().item(), edges[:, 1].max().item())
-        print("num nodes", num_nodes)
+        # num_nodes = edges[:,[self.ecols.FromNodeId,
+        #                     self.ecols.ToNodeId]].unique().size(0)
+        # print("num nodes", num_nodes)
+        # num_nodes = max(edges[:, 0].max().item(), edges[:, 1].max().item())
+        # print("num nodes", num_nodes)
         timesteps = u.aggregate_by_time(edges[:,self.ecols.TimeStep],args.bitcoin_args.aggr_time)
         self.max_time = timesteps.max()
         self.min_time = timesteps.min()
