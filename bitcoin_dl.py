@@ -11,7 +11,7 @@ class bitcoin_dataset():
                                   'TimeStep': 3
                                 })
         args.bitcoin_args = u.Namespace(args.bitcoin_args)
-
+        self.node_feats = 3
         #build edge data structure
         edges = self.load_edges(args.bitcoin_args)
 
