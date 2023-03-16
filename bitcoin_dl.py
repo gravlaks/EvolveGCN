@@ -87,6 +87,9 @@ class bitcoin_dataset():
         self.num_nodes = num_nodes
         self.num_classes = 2
 
+        self.feats_per_node = 3
+        self.nodes_feats = torch.rand((self.num_nodes,self.feats_per_node))
+
 
     def cluster_negs_and_positives(self,ratings):
         pos_indices = ratings > 0
