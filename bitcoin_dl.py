@@ -11,7 +11,6 @@ class bitcoin_dataset():
                                   'TimeStep': 3
                                 })
         args.bitcoin_args = u.Namespace(args.bitcoin_args)
-        self.feats_per_node = 3
         #build edge data structure
         edges = self.load_edges(args.bitcoin_args)
 
@@ -87,7 +86,7 @@ class bitcoin_dataset():
         self.num_nodes = num_nodes
         self.num_classes = 2
 
-        self.feats_per_node = 3
+        self.feats_per_node = args.bitcoin_args.feats_per_node
         self.nodes_feats = torch.rand((self.num_nodes,self.feats_per_node))
 
 
