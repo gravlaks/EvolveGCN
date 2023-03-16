@@ -4,7 +4,7 @@ bitcoinotc_args:
   folder: ./data/
   edges_file: soc-sign-bitcoinotc.csv
   aggr_time: 1200000 #three weeks in seconds: 1200000
-  feats_per_node: 3
+feats_per_node: 3
 
 use_cuda: True
 use_logfile: True
