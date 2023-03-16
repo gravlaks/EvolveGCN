@@ -35,8 +35,9 @@ def get_1_hot_deg_feats(adj,max_deg,num_nodes):
     #For now it'll just return a 2-hot vector
     new_vals = torch.ones(adj['idx'].size(0))
     new_adj = {'idx':adj['idx'], 'vals': new_vals}
-    degs_out, _ = get_degree_vects(new_adj,num_nodes)
     num_nodes = 6006
+
+    degs_out, _ = get_degree_vects(new_adj,num_nodes)
     degs_out = {'idx': torch.cat([torch.arange(num_nodes).view(-1,1),
                                   degs_out.view(-1,1)],dim=1),
                 'vals': torch.ones(num_nodes)}
