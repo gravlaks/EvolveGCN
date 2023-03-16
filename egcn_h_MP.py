@@ -32,11 +32,12 @@ class GAT_MP(MessagePassing):
 
     def forward(self, x, edge_index, size = None, weights=None):
         
-
+        print("edge index", edge_index.shape)
+        print("x", x.shape)
         H, C = self.heads, self.out_channels
-
+        print("hc", H.shape, C.shape)
         N = x.shape[0]
-
+        print("matmul", (x.matmul(weights)).shape)
         h_prime = x.matmul(weights).view((N, H, C//H))
         
         alpha_l = torch.sum(h_prime*self.att_l, dim=-1)
