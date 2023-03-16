@@ -16,7 +16,7 @@ class sbm_dataset():
         edges = self.load_edges(args.sbm_args)
         print(type(edges))
         print("edges", edges.shape)
-        num_edges = 2000
+        num_edges = 5000
         idx = torch.randperm(len(edges))[:num_edges]
         edges = edges[idx]
         # edges = edges[edges[:, 0] <100 ]
