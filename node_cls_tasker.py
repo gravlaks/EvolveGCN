@@ -60,6 +60,7 @@ class Node_Cls_Tasker():
 		return prepare_node_feats
 
 	def get_sample(self,idx,test):
+		raise Exception( "only link prediction")
 		hist_adj_list = []
 		hist_ndFeats_list = []
 		hist_mask_list = []

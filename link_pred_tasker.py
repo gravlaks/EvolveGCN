@@ -87,6 +87,7 @@ class Link_Pred_Tasker():
 
 	def build_get_node_feats(self,args,dataset):
 		if args.use_2_hot_node_feats:
+			raise Exception( "2 hot node must be false")
 			max_deg_out, max_deg_in = tu.get_max_degs(args,dataset)
 			self.feats_per_node = max_deg_out + max_deg_in
 			def get_node_feats(adj):
@@ -95,6 +96,7 @@ class Link_Pred_Tasker():
 											  max_deg_in,
 											  dataset.num_nodes)
 		elif args.use_1_hot_node_feats:
+			raise Exception("1 hot must be false")
 			max_deg,_ = tu.get_max_degs(args,dataset)
 			self.feats_per_node = max_deg
 			def get_node_feats(adj):
@@ -128,7 +130,7 @@ class Link_Pred_Tasker():
 
 			node_feats = self.get_node_feats(cur_adj)
 
-			cur_adj = tu.normalize_adj(adj = cur_adj, num_nodes = self.data.num_nodes)
+			#cur_adj = tu.normalize_adj(adj = cur_adj, num_nodes = self.data.num_nodes)
 
 			hist_adj_list.append(cur_adj)
 			hist_ndFeats_list.append(node_feats)

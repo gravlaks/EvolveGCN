@@ -55,6 +55,7 @@ class Edge_Cls_Tasker():
 
 
 	def get_sample(self,idx,test):
+		raise Exception("only link prediction")
 		hist_adj_list = []
 		hist_ndFeats_list = []
 		hist_mask_list = []
