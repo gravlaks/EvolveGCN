@@ -110,3 +110,48 @@ class GAT(torch.nn.Module):
         h_prime = torch.mm(attn_scores, h_prime)
         out = self.activation(h_prime)
         return out
+
+
+class MP(MessagePassing):
+    
+    def __init__(self, in_channels, out_channels, normalize = True,
+                 bias = False, **kwargs):  
+        super(MP, self).__init__(**kwargs)
+
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.normalize = normalize
+
+        self.lin_l = nn.Linear(in_channels, out_channels, bias=bias)
+        self.lin_r = nn.Linear(in_channels, out_channels, bias=bias)
+
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        self.lin_l.reset_parameters()
+        self.lin_r.reset_parameters()
+
+    def forward(self, x, edge_index, weights, size = None):
+
+        out = self.propagate(edge_index, size=size, x = (x, x))
+        skip = x.matmul(weights) #self.lin_r(x) 
+        out = out.matmul(weights) + skip
+
+        if self.normalize:
+          out = F.normalize(out)
+          
+        return out
+
+    def message(self, x_j):
+
+        out = x_j
+
+        return out
+
+    def aggregate(self, inputs, index, dim_size = None):
+
+        node_dim = self.node_dim
+
+        out = torch_scatter.scatter(inputs.to_dense(), index.to_dense(), node_dim, reduce="mean")
+
+        return out
