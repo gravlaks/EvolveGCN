@@ -14,11 +14,11 @@ class bitcoin_dataset():
 
         #build edge data structure
         edges = self.load_edges(args.bitcoin_args)
-        num_nodes = max(edges[:, 0].max().item(), edges[:, 1].max().item())
-        print('num nodes', num_nodes)
+        #num_nodes = max(edges[:, 0].max().item(), edges[:, 1].max().item())
+        #print('num nodes', num_nodes)
         edges = self.make_contigous_node_ids(edges)
-        # num_nodes = edges[:,[self.ecols.FromNodeId,
-        #                     self.ecols.ToNodeId]].unique().size(0)
+        num_nodes = edges[:,[self.ecols.FromNodeId,
+                            self.ecols.ToNodeId]].unique().size(0)
         # print("num nodes", num_nodes)
         # num_nodes = max(edges[:, 0].max().item(), edges[:, 1].max().item())
         # print("num nodes", num_nodes)
