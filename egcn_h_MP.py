@@ -40,16 +40,16 @@ class GAT_MP(MessagePassing):
         alpha_l = torch.sum(h_prime*self.att_l, dim=-1)
         alpha_r = torch.sum(h_prime*self.att_r, dim=-1)
 
-        print("x", x.shape)
-        print("edge_index", edge_index.shape)
-        print("N, H, C", N, H, C)
-        print("h_prime", h_prime.shape)
+        # print("x", x.shape)
+        # print("edge_index", edge_index.shape)
+        # print("N, H, C", N, H, C)
+        # print("h_prime", h_prime.shape)
         
         out = self.propagate(edge_index=edge_index, x=(h_prime, h_prime), alpha=(alpha_l, alpha_r), size=size)
         
         out = out.view((N, C))
         
-        print("out", out.shape)
+        # print("out", out.shape)
         return out
 
 
