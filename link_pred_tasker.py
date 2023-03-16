@@ -118,7 +118,7 @@ class Link_Pred_Tasker():
 								   time = i,
 								   weighted = True,
 								   time_window = self.args.adj_mat_time_window)
-			print("cur adj get_sample", cur_adj.shape)
+			# print("cur adj get_sample", cur_adj.shape)
 			if self.args.smart_neg_sampling:
 				existing_nodes.append(cur_adj['idx'].unique())
 			else:
