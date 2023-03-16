@@ -21,8 +21,8 @@ class sbm_dataset():
         # print(idx.max(), idx.min())
         # edges = edges[idx]
         # print("len edges", len(edges))
-        edges = edges[edges[:, 0] <100 ]
-        edges = edges[edges[:, 1]<100]
+        # edges = edges[edges[:, 0] <100 ]
+        # edges = edges[edges[:, 1]<100]
         
         timesteps = u.aggregate_by_time(edges[:,self.ecols.TimeStep], args.sbm_args.aggr_time)
         self.max_time = timesteps.max()
