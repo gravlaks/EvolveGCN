@@ -44,7 +44,7 @@ num_hist_steps_max: 10 # only used if num_hist_steps: None
 
 data_loading_params:
   batch_size: 1
-  num_workers: 8
+  num_workers: 0
 
 gcn_parameters:
   feats_per_node: 100
