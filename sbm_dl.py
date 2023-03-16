@@ -16,11 +16,13 @@ class sbm_dataset():
         edges = self.load_edges(args.sbm_args)
         print(type(edges))
         print("edges", edges.shape)
-        # num_edges = 5000
-        # idx = torch.randperm(len(edges))[:num_edges]
-        # edges = edges[idx]
-        edges = edges[edges[:, 0] <100 ]
-        edges = edges[edges[:, 1]<100]
+        num_edges = 5000
+        idx = torch.randperm(len(edges))[:num_edges]
+        print(idx)
+        edges = edges[idx]
+        print("len edges", len(edges))
+        # edges = edges[edges[:, 0] <100 ]
+        # edges = edges[edges[:, 1]<100]
         
         timesteps = u.aggregate_by_time(edges[:,self.ecols.TimeStep], args.sbm_args.aggr_time)
         self.max_time = timesteps.max()
