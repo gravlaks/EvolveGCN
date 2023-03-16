@@ -1,9 +1,10 @@
 import utils as u
 import torch
 from torch.nn.parameter import Parameter
+
 import torch.nn as nn
 import math
-from egcn_h_MP import GAT, GAT_MP
+from egcn_h_MP import GAT, GAT_MP, MP
 from torch.nn import functional as F
 
 class EGCN(torch.nn.Module):
@@ -58,6 +59,10 @@ class GRCU(torch.nn.Module):
         self.activation = self.args.activation
         self.GCN_init_weights = Parameter(torch.Tensor(self.args.in_feats,self.args.out_feats))
         self.reset_param(self.GCN_init_weights)
+        self.layers = nn.ModuleList()
+
+        
+        self.mp_layer = MP(in_channels = self.args.in_feats, out_channels=self.args.out_feats)
 
     def reset_param(self,t):
         #Initialize based on the number of columns
@@ -67,11 +72,12 @@ class GRCU(torch.nn.Module):
     def forward(self,A_list,node_embs_list,mask_list):
         GCN_weights = self.GCN_init_weights
         out_seq = []
-        for t,Ahat in enumerate(A_list):
+        for t,edge_index in enumerate(A_list):
             node_embs = node_embs_list[t]
             #first evolve the weights from the initial and use the new weights with the node_embs
             GCN_weights = self.evolve_weights(GCN_weights,node_embs,mask_list[t])
-            node_embs = self.activation(Ahat.matmul(node_embs.matmul(GCN_weights)))
+            # node_embs = self.activation(Ahat.matmul(node_embs.matmul(GCN_weights)))
+            node_embs = self.mp_layer(node_embs, edge_index, weights=GCN_weights)
 
             out_seq.append(node_embs)
 
