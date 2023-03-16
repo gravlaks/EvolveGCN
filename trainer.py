@@ -158,6 +158,7 @@ class Trainer():
                         sparse_adj = u.sparse_prepare_tensor(adj,torch_size = [self.num_nodes])
                         adj = sparse_adj.coalesce().indices().contiguous()
                         print("adj shape", adj.shape)
+                        print("adj after", adj.max())
                         sample.hist_adj_list[i] = adj.to(self.args.device)
 
                         nodes = self.tasker.prepare_node_feats(sample.hist_ndFeats_list[i])
