@@ -50,10 +50,10 @@ gcn_parameters:
   feats_per_node: 100
   feats_per_node_min: 50
   feats_per_node_max: 256
-  layer_1_feats: 33
+  layer_1_feats: 16
   layer_1_feats_min: 21
   layer_1_feats_max: 200
-  layer_2_feats: 30
+  layer_2_feats: 16
   layer_2_feats_same_as_l1: True
   k_top_grcu: 200
   num_layers: 2
