@@ -1,5 +1,5 @@
-data/
 
+!/data/bitcoin_updated.csv
 !/log
 /log/*
 !/log/file_so_not_ignored.txt
