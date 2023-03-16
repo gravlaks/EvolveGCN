@@ -152,16 +152,16 @@ class Trainer():
         def prepare_sample(self,sample):
                 sample = u.Namespace(sample)
                 for i,adj in enumerate(sample.hist_adj_list):
-                        print("adj before sparse", adj["idx"].max())
-                        print("num nodes",self.num_nodes )
+                        # print("adj before sparse", adj["idx"].max())
+                        # print("num nodes",self.num_nodes )
                         sparse_adj = u.sparse_prepare_tensor(adj,torch_size = [self.num_nodes])
                         adj = sparse_adj.coalesce().indices().contiguous()
-                        print("adj shape", adj.shape)
-                        print("adj after", adj.max())
+                        # print("adj shape", adj.shape)
+                        # print("adj after", adj.max())
                         sample.hist_adj_list[i] = adj.to(self.args.device)
 
                         nodes = self.tasker.prepare_node_feats(sample.hist_ndFeats_list[i])
-                        print("nodes", nodes.shape)
+                        # print("nodes", nodes.shape)
 
 
                         
