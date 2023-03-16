@@ -119,6 +119,7 @@ class GRCU_GAT(torch.nn.Module):
         GCN_weights = self.GCN_init_weights
         out_seq = []
         for t,edge_index in enumerate(A_list):
+            print("edge index", edge_index.shape)
             node_embs = node_embs_list[t]
             #first evolve the weights from the initial and use the new weights with the node_embs
             GCN_weights = self.evolve_weights(GCN_weights,node_embs,mask_list[t])

@@ -35,7 +35,7 @@ class GAT_MP(MessagePassing):
         print("edge index", edge_index.shape)
         print("x", x.shape)
         H, C = self.heads, self.out_channels
-        print("hc", H.shape, C.shape)
+        print("hc", H, C)
         N = x.shape[0]
         print("matmul", (x.matmul(weights)).shape)
         h_prime = x.matmul(weights).view((N, H, C//H))
