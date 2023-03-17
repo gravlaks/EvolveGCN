@@ -98,7 +98,7 @@ class GRCU_GAT(torch.nn.Module):
         cell_args.rows = args.in_feats
         cell_args.cols = args.out_feats
 
-        self.evolve_weights = torch.nn.GRUCell(args.out_feats, args.out_feats)
+        self.evolve_weights = torch.nn.GRUCell(args.in_feats, args.in_feats)
         #self.evolve_weights = mat_GRU_cell(cell_args)
 
         self.activation = self.args.activation
