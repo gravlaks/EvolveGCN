@@ -140,8 +140,8 @@ class GRCU_GAT(torch.nn.Module):
             # #first evolve the weights from the initial and use the new weights with the node_embs
             # # GCN_weights = self.evolve_weights(GCN_weights,node_embs,mask_list[t])
             # print("mask_list", mask_list[t])
-        
-            input_GRU = torch.sum(torch.softmax((torch.add(mask_list[t].flatten(), node_embs_list[t].t())), axis=1), axis=1)
+            mask = mask_list[t].to_dense().flatten()
+            input_GRU = torch.sum(torch.softmax((torch.add(mask, node_embs_list[t].t())), axis=1), axis=1)
             
             hidden_GRU = GCN_weights.flatten()
             # print("input_shape", input_GRU.shape)
