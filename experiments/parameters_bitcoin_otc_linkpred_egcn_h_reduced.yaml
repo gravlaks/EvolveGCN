@@ -11,7 +11,7 @@ use_logfile: False
 
 model: egcn_h_gat
 
-task: edge_cls # link_pred edge_cls
+task: link_pred # link_pred edge_cls
 
 class_weights: [ 0.05, 0.95]
 use_2_hot_node_feats: False
