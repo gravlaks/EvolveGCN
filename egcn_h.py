@@ -36,7 +36,6 @@ class EGCN(torch.nn.Module):
         return self._parameters
 
     def forward(self,A_list, Nodes_list,nodes_mask_list, edge_weights=None):
-        print("edge weights", edge_weights)
         node_feats= Nodes_list[-1]
 
         for unit in self.GRCU_layers:
