@@ -57,8 +57,8 @@ class GAT_MP(MessagePassing):
 
        
 
-        final_attention_weights = torch.mul(torch.add(alpha_i, alpha_j).t(), edge_weights).t()
-        att_unnormalized = F.leaky_relu(final_attention_weights)
+        final_attention_weights = torch.add(alpha_i, alpha_j)
+        att_unnormalized = torch.mul(F.leaky_relu(final_attention_weights).t(), edge_weights).t()
         att_weights = torch_geometric.utils.softmax(att_unnormalized, index=index, num_nodes=size_i, ptr=ptr, dim=-2)
         att_weights = torch.nn.functional.dropout(att_weights, p=self.dropout)
         out = x_j*att_weights.unsqueeze(-1)
