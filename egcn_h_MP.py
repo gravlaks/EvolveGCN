@@ -63,22 +63,13 @@ class GAT_MP(MessagePassing):
         att_weights = torch_geometric.utils.softmax(att_unnormalized, index=index, num_nodes=size_i, ptr=ptr, dim=-2)
         att_weights = torch.nn.functional.dropout(att_weights, p=self.dropout)
         out = x_j*att_weights.unsqueeze(-1)
-        #assert(out.shape ==(E, H, C)), f"out shape: {out.shape}"
-        ############################################################################
 
         return out
 
 
     def aggregate(self, inputs, index, dim_size = None):
 
-        ############################################################################
-        # TODO: Your code here! 
-        # Implement your aggregate function here.
-        # See here as how to use torch_scatter.scatter: https://pytorch-scatter.readthedocs.io/en/latest/_modules/torch_scatter/scatter.html
-        # Pay attention to "reduce" parameter is different from that in GraphSage.
-        # Our implementation is ~1 lines, but don't worry if you deviate from this.
-
-        ############################################################################
+        
         node_dim = self.node_dim
         out = torch_scatter.scatter(inputs, index, dim=node_dim, reduce="sum")
 
