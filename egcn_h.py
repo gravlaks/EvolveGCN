@@ -128,24 +128,25 @@ class GRCU_GAT(torch.nn.Module):
         GCN_weights = self.GCN_init_weights
         out_seq = []
         for t, (edge_index, edge_weight) in enumerate(zip(A_list, edge_weights)):
-            # print("GCN ", GCN_weights.shape)
-            # print("edge index", edge_index.shape)
-            # print(type(node_embs_list[t]))
-            # print(type(mask_list[t]))
-            # # node_embs = node_embs_list[t].to_dense()
+            print("GCN ", GCN_weights.shape)
+            print("edge index", edge_index.shape)
+            print(type(node_embs_list[t]))
+            print(type(mask_list[t]))
+            # node_embs = node_embs_list[t].to_dense()
             
-            # # mask = mask_list[t].to_dense()
+            # mask = mask_list[t].to_dense()
             
-            # print("node_embs", node_embs.shape)
-            # #first evolve the weights from the initial and use the new weights with the node_embs
-            # # GCN_weights = self.evolve_weights(GCN_weights,node_embs,mask_list[t])
-            # print("mask_list", mask_list[t])
+            print("node_embs", node_embs.shape)
+            #first evolve the weights from the initial and use the new weights with the node_embs
+            # GCN_weights = self.evolve_weights(GCN_weights,node_embs,mask_list[t])
+            print("mask_list", mask_list[t])
             mask = mask_list[t].flatten()
             node_embs = node_embs_list[t].to_dense().t()
             input_GRU = torch.sum(torch.mul(torch.softmax(mask, dim=0), node_embs), axis=1)
-            
             hidden_GRU = GCN_weights.flatten()
-
+            print("input", input_GRU.shape)
+            print("hidden", hidden_GRU.shape)
+            
 
             GCN_weights = self.evolve_weights(input_GRU, hidden_GRU).reshape(self.GCN_init_weights.shape)
             #node_embs = self.gat_layer(node_embs, Ahat, GCN_weights)
