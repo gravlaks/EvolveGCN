@@ -100,7 +100,8 @@ class Trainer():
                         predictions, nodes_embs = self.predict(s.hist_adj_list,
                                                                                                    s.hist_ndFeats_list,
                                                                                                    s.label_sp['idx'],
-                                                                                                   s.node_mask_list)
+                                                                                                   s.node_mask_list
+                                                                                                   s.hist_weights_list)
 
                         loss = self.comp_loss(predictions,s.label_sp['vals'])
                         # print(loss)
@@ -116,10 +117,10 @@ class Trainer():
 
                 return eval_measure, nodes_embs
 
-        def predict(self,hist_adj_list,hist_ndFeats_list,node_indices,mask_list):
+        def predict(self,hist_adj_list,hist_ndFeats_list,node_indices,mask_list, hist_weights_list):
                 nodes_embs = self.gcn(hist_adj_list,
                                                           hist_ndFeats_list,
-                                                          mask_list)
+                                                          mask_list, hist_weights_list)
 
                 predict_batch_size = 100000
                 gather_predictions=[]
@@ -151,15 +152,17 @@ class Trainer():
 
         def prepare_sample(self,sample):
                 sample = u.Namespace(sample)
+                sample.hist_weights_list = []
                 for i,adj in enumerate(sample.hist_adj_list):
                         # print("adj before sparse", adj["idx"].max())
                         # print("num nodes",self.num_nodes )
                         sparse_adj = u.sparse_prepare_tensor(adj,torch_size = [self.num_nodes])
                         adj = sparse_adj.coalesce().indices().contiguous()
+                        weights = sparse_adj.coalesce().values().contiguous()
                         # print("adj shape", adj.shape)
                         # print("adj after", adj.max())
                         sample.hist_adj_list[i] = adj.to(self.args.device)
-
+                        sample.hist_weights_list.append(weights.to(self.args.device))
                         nodes = self.tasker.prepare_node_feats(sample.hist_ndFeats_list[i])
                         # print("nodes", nodes.shape)
 

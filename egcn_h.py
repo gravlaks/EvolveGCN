@@ -34,11 +34,15 @@ class EGCN(torch.nn.Module):
     def parameters(self):
         return self._parameters
 
-    def forward(self,A_list, Nodes_list,nodes_mask_list):
+    def forward(self,A_list, Nodes_list,nodes_mask_list, edge_weights=None):
+        print("edge weights", edge_weights)
         node_feats= Nodes_list[-1]
 
         for unit in self.GRCU_layers:
-            Nodes_list = unit(A_list,Nodes_list,nodes_mask_list)
+            if self.gat:
+                Nodes_list = unit(A_list,Nodes_list,nodes_mask_list, edge_weights)
+            else:
+                Nodes_list = unit(A_list,Nodes_list,nodes_mask_list)
 
         out = Nodes_list[-1]
         if self.skipfeats:
@@ -72,7 +76,7 @@ class GRCU(torch.nn.Module):
     def forward(self,A_list,node_embs_list,mask_list):
         GCN_weights = self.GCN_init_weights
         out_seq = []
-        for t,edge_index in enumerate(A_list):
+        for t, edge_index in enumerate(A_list):
             node_embs = node_embs_list[t]
             #first evolve the weights from the initial and use the new weights with the node_embs
             GCN_weights = self.evolve_weights(GCN_weights,node_embs,mask_list[t])
@@ -115,10 +119,10 @@ class GRCU_GAT(torch.nn.Module):
         stdv = 1. / math.sqrt(t.size(1))
         t.data.uniform_(-stdv,stdv)
 
-    def forward(self,A_list,node_embs_list,mask_list):
+    def forward(self,A_list,node_embs_list,mask_list, edge_weights):
         GCN_weights = self.GCN_init_weights
         out_seq = []
-        for t,edge_index in enumerate(A_list):
+        for t, (edge_index, edge_weight) in enumerate(zip(A_list, edge_weights)):
             # print("edge index", edge_index.shape)
             node_embs = node_embs_list[t]
             # print("node_embs", node_embs.shape)
@@ -126,7 +130,7 @@ class GRCU_GAT(torch.nn.Module):
             GCN_weights = self.evolve_weights(GCN_weights,node_embs,mask_list[t])
 
             #node_embs = self.gat_layer(node_embs, Ahat, GCN_weights)
-            node_embs = self.gat_layer(node_embs, edge_index, weights=GCN_weights)
+            node_embs = self.gat_layer(node_embs, edge_index, weights=GCN_weights, edge_weight)
 
             out_seq.append(node_embs)
             

@@ -167,5 +167,6 @@ class Link_Pred_Tasker():
 				'hist_adj_list': hist_adj_list,
 				'hist_ndFeats_list': hist_ndFeats_list,
 				'label_sp': label_adj,
-				'node_mask_list': hist_mask_list}
+				'node_mask_list': hist_mask_list, 
+				'hist_weights_list': hist_weights_list}
 
