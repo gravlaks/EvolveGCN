@@ -102,7 +102,11 @@ class GRCU_GAT(torch.nn.Module):
         print("GRU input shape",args.in_feats )
         print("Hidden size", hidden_size )
         
-        self.evolve_weights = torch.nn.GRUCell(args.in_feats, args.in_feats*args.out_feats)
+        self.recurrent_unit = "lstm"
+        if self.recurrent_unit == "gru":
+            self.evolve_weights = torch.nn.GRUCell(args.in_feats, args.in_feats*args.out_feats)
+        elif self.recurrent_unit == "lstm":
+            self.evolve_weights = torch.nn.LSTM(args.in_feats, args.in_feats*args.out_feats)
         #self.evolve_weights = mat_GRU_cell(cell_args)
 
         self.activation = self.args.activation
@@ -126,6 +130,7 @@ class GRCU_GAT(torch.nn.Module):
 
     def forward(self,A_list,node_embs_list,mask_list, edge_weights):
         GCN_weights = self.GCN_init_weights
+        cell_state = torch.zeros((self.GCN_init_weights.flatten().shape))
         out_seq = []
         for t, (edge_index, edge_weight) in enumerate(zip(A_list, edge_weights)):
             # print("GCN ", GCN_weights.shape)
@@ -138,7 +143,6 @@ class GRCU_GAT(torch.nn.Module):
             
             #first evolve the weights from the initial and use the new weights with the node_embs
             # GCN_weights = self.evolve_weights(GCN_weights,node_embs,mask_list[t])
-            # print("mask_list", mask_list[t])
             mask = mask_list[t].flatten()
             node_embs = node_embs_list[t].to_dense()
             # print("node_embs", node_embs.shape)
@@ -148,8 +152,11 @@ class GRCU_GAT(torch.nn.Module):
             # print("input", input_GRU.shape)
             # print("hidden", hidden_GRU.shape)
             
+            if self.recurrent_unit == "gru":
+                GCN_weights = self.evolve_weights(input_GRU, hidden_GRU).reshape(self.GCN_init_weights.shape)
+            elif self.recurrent_unit == "lstm":
+                GCN_weights, cell_state = self.evolve_weights(input_GRU, hidden_GRU, cell_state).reshape(self.GCN_init_weights.shape)
 
-            GCN_weights = self.evolve_weights(input_GRU, hidden_GRU).reshape(self.GCN_init_weights.shape)
             #node_embs = self.gat_layer(node_embs, Ahat, GCN_weights)
             node_embs = self.gat_layer(node_embs, edge_index, weights=GCN_weights, edge_weights=edge_weight)
 
