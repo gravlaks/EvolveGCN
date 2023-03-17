@@ -19,6 +19,7 @@ class EGCN(torch.nn.Module):
         self.skipfeats = skipfeats
         self.GRCU_layers = []
         self._parameters = nn.ParameterList()
+        self.gat = gat
         for i in range(1,len(feats)):
             GRCU_args = u.Namespace({'in_feats' : feats[i-1],
                                      'out_feats': feats[i],
