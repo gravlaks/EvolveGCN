@@ -45,7 +45,7 @@ class GAT_MP(MessagePassing):
         # print("N, H, C", N, H, C)
         # print("h_prime", h_prime.shape)
         
-        out = self.propagate(edge_index=edge_index, x=(h_prime, h_prime), alpha=(alpha_l, alpha_r), size=size)
+        out = self.propagate(edge_index=edge_index, x=(h_prime, h_prime), alpha=(alpha_l, alpha_r), size=size, edge_weights=edge_weights)
         
         out = out.view((N, C))
         
@@ -53,11 +53,11 @@ class GAT_MP(MessagePassing):
         return out
 
 
-    def message(self,index, x_j, alpha_j, alpha_i, ptr, size_i):
+    def message(self,index, x_j, alpha_j, alpha_i, ptr, size_i, edge_weights):
 
        
         
-        final_attention_weights = torch.add(alpha_i, alpha_j)
+        final_attention_weights = torch.mul(torch.add(alpha_i, alpha_j), edge_weights)
         att_unnormalized = F.leaky_relu(final_attention_weights)
         att_weights = torch_geometric.utils.softmax(att_unnormalized, index=index, num_nodes=size_i, ptr=ptr, dim=-2)
         att_weights = torch.nn.functional.dropout(att_weights, p=self.dropout)
