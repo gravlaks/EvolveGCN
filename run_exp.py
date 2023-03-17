@@ -46,22 +46,22 @@ def random_param_value(param, param_min, param_max, type='int'):
 		return param
 
 def build_random_hyper_params(args):
-	if args.model == 'all':
-		model_types = ['gcn', 'egcn_o', 'egcn_h', 'gruA', 'gruB','egcn','lstmA', 'lstmB']
-		args.model=model_types[args.rank]
-	elif args.model == 'all_nogcn':
-		model_types = ['egcn_o', 'egcn_h', 'gruA', 'gruB','egcn','lstmA', 'lstmB']
-		args.model=model_types[args.rank]
-	elif args.model == 'all_noegcn3':
-		model_types = ['gcn', 'egcn_h', 'gruA', 'gruB','egcn','lstmA', 'lstmB']
-		args.model=model_types[args.rank]
-	elif args.model == 'all_nogruA':
-		model_types = ['gcn', 'egcn_o', 'egcn_h', 'gruB','egcn','lstmA', 'lstmB']
-		args.model=model_types[args.rank]
-		args.model=model_types[args.rank]
-	elif args.model == 'saveembs':
-		model_types = ['gcn', 'gcn', 'skipgcn', 'skipgcn']
-		args.model=model_types[args.rank]
+	# if args.model == 'all':
+	# 	model_types = ['gcn', 'egcn_o', 'egcn_h', 'gruA', 'gruB','egcn','lstmA', 'lstmB']
+	# 	args.model=model_types[args.rank]
+	# elif args.model == 'all_nogcn':
+	# 	model_types = ['egcn_o', 'egcn_h', 'gruA', 'gruB','egcn','lstmA', 'lstmB']
+	# 	args.model=model_types[args.rank]
+	# elif args.model == 'all_noegcn3':
+	# 	model_types = ['gcn', 'egcn_h', 'gruA', 'gruB','egcn','lstmA', 'lstmB']
+	# 	args.model=model_types[args.rank]
+	# elif args.model == 'all_nogruA':
+	# 	model_types = ['gcn', 'egcn_o', 'egcn_h', 'gruB','egcn','lstmA', 'lstmB']
+	# 	args.model=model_types[args.rank]
+	# 	args.model=model_types[args.rank]
+	# elif args.model == 'saveembs':
+	# 	model_types = ['gcn', 'gcn', 'skipgcn', 'skipgcn']
+	# 	args.model=model_types[args.rank]
 
 	args.learning_rate =random_param_value(args.learning_rate, args.learning_rate_min, args.learning_rate_max, type='logscale')
 	# args.adj_mat_time_window = random_param_value(args.adj_mat_time_window, args.adj_mat_time_window_min, args.adj_mat_time_window_max, type='int')
@@ -86,46 +86,46 @@ def build_random_hyper_params(args):
 	return args
 
 def build_dataset(args):
-	if args.data == 'bitcoinotc' or args.data == 'bitcoinalpha':
-		if args.data == 'bitcoinotc':
-			args.bitcoin_args = args.bitcoinotc_args
-		elif args.data == 'bitcoinalpha':
-			args.bitcoin_args = args.bitcoinalpha_args
+	if args.data == 'bitcoinotc' :#or args.data == 'bitcoinalpha':
+		#if args.data == 'bitcoinotc':
+		args.bitcoin_args = args.bitcoinotc_args
+		# elif args.data == 'bitcoinalpha':
+		# 	args.bitcoin_args = args.bitcoinalpha_args
 		return bc.bitcoin_dataset(args)
-	elif args.data == 'aml_sim':
-		return aml.Aml_Dataset(args)
-	elif args.data == 'elliptic':
-		return ell.Elliptic_Dataset(args)
-	elif args.data == 'elliptic_temporal':
-		return ell_temp.Elliptic_Temporal_Dataset(args)
-	elif args.data == 'uc_irv_mess':
-		return ucim.Uc_Irvine_Message_Dataset(args)
-	elif args.data == 'dbg':
-		return dbg.dbg_dataset(args)
-	elif args.data == 'colored_graph':
-		return cg.Colored_Graph(args)
-	elif args.data == 'autonomous_syst':
-		return aus.Autonomous_Systems_Dataset(args)
-	elif args.data == 'reddit':
-		return rdt.Reddit_Dataset(args)
-	elif args.data.startswith('sbm'):
-		if args.data == 'sbm20':
-			args.sbm_args = args.sbm20_args
-		elif args.data == 'sbm50':
-			args.sbm_args = args.sbm50_args
-		return sbm.sbm_dataset(args)
+	# elif args.data == 'aml_sim':
+	# 	return aml.Aml_Dataset(args)
+	# elif args.data == 'elliptic':
+	# 	return ell.Elliptic_Dataset(args)
+	# elif args.data == 'elliptic_temporal':
+	# 	return ell_temp.Elliptic_Temporal_Dataset(args)
+	# elif args.data == 'uc_irv_mess':
+	# 	return ucim.Uc_Irvine_Message_Dataset(args)
+	# elif args.data == 'dbg':
+	# 	return dbg.dbg_dataset(args)
+	# elif args.data == 'colored_graph':
+	# 	return cg.Colored_Graph(args)
+	# elif args.data == 'autonomous_syst':
+	# 	return aus.Autonomous_Systems_Dataset(args)
+	# elif args.data == 'reddit':
+	# 	return rdt.Reddit_Dataset(args)
+	# elif args.data.startswith('sbm'):
+	# 	if args.data == 'sbm20':
+	# 		args.sbm_args = args.sbm20_args
+	# 	elif args.data == 'sbm50':
+	# 		args.sbm_args = args.sbm50_args
+	# 	return sbm.sbm_dataset(args)
 	else:
 		raise NotImplementedError('only arxiv has been implemented')
 
 def build_tasker(args,dataset):
 	if args.task == 'link_pred':
 		return lpt.Link_Pred_Tasker(args,dataset)
-	elif args.task == 'edge_cls':
-		return ect.Edge_Cls_Tasker(args,dataset)
-	elif args.task == 'node_cls':
-		return nct.Node_Cls_Tasker(args,dataset)
-	elif args.task == 'static_node_cls':
-		return nct.Static_Node_Cls_Tasker(args,dataset)
+	# elif args.task == 'edge_cls':
+	# 	return ect.Edge_Cls_Tasker(args,dataset)
+	# elif args.task == 'node_cls':
+	# 	return nct.Node_Cls_Tasker(args,dataset)
+	# elif args.task == 'static_node_cls':
+	# 	return nct.Static_Node_Cls_Tasker(args,dataset)
 
 	else:
 		raise NotImplementedError('still need to implement the other tasks')
@@ -133,36 +133,36 @@ def build_tasker(args,dataset):
 def build_gcn(args,tasker):
 	gcn_args = u.Namespace(args.gcn_parameters)
 	gcn_args.feats_per_node = tasker.feats_per_node
-	if args.model == 'gcn':
-		return mls.Sp_GCN(gcn_args,activation = torch.nn.RReLU()).to(args.device)
-	if args.model == 'gat':
-		return mls.Sp_GAT(gcn_args,activation = torch.nn.RReLU()).to(args.device)
-	elif args.model == 'skipgcn':
-		return mls.Sp_Skip_GCN(gcn_args,activation = torch.nn.RReLU()).to(args.device)
-	elif args.model == 'skipfeatsgcn':
-		return mls.Sp_Skip_NodeFeats_GCN(gcn_args,activation = torch.nn.RReLU()).to(args.device)
+	# if args.model == 'gcn':
+	# 	return mls.Sp_GCN(gcn_args,activation = torch.nn.RReLU()).to(args.device)
+	# if args.model == 'gat':
+	# 	return mls.Sp_GAT(gcn_args,activation = torch.nn.RReLU()).to(args.device)
+	# elif args.model == 'skipgcn':
+	# 	return mls.Sp_Skip_GCN(gcn_args,activation = torch.nn.RReLU()).to(args.device)
+	# elif args.model == 'skipfeatsgcn':
+	# 	return mls.Sp_Skip_NodeFeats_GCN(gcn_args,activation = torch.nn.RReLU()).to(args.device)
+	# else:
+	assert args.num_hist_steps > 0, 'more than one step is necessary to train LSTM'
+	# if args.model == 'lstmA':
+	# 	return mls.Sp_GCN_LSTM_A(gcn_args,activation = torch.nn.RReLU()).to(args.device)
+	# elif args.model == 'gruA':
+	# 	return mls.Sp_GCN_GRU_A(gcn_args,activation = torch.nn.RReLU()).to(args.device)
+	# elif args.model == 'lstmB':
+	# 	return mls.Sp_GCN_LSTM_B(gcn_args,activation = torch.nn.RReLU()).to(args.device)
+	# elif args.model == 'gruB':
+	# 	return mls.Sp_GCN_GRU_B(gcn_args,activation = torch.nn.RReLU()).to(args.device)
+	# elif args.model == 'egcn':
+	# 	return egcn.EGCN(gcn_args, activation = torch.nn.RReLU()).to(args.device)
+	if args.model == 'egcn_h':
+		return egcn_h.EGCN(gcn_args, activation = torch.nn.RReLU(), device = args.device)
+	elif args.model == 'egcn_h_gat':
+		return egcn_h.EGCN(gcn_args, activation = torch.nn.RReLU(), device = args.device, gat=True)
+	# elif args.model == 'skipfeatsegcn_h':
+	# 	return egcn_h.EGCN(gcn_args, activation = torch.nn.RReLU(), device = args.device, skipfeats=True)
+	# elif args.model == 'egcn_o':
+	# 	return egcn_o.EGCN(gcn_args, activation = torch.nn.RReLU(), device = args.device)
 	else:
-		assert args.num_hist_steps > 0, 'more than one step is necessary to train LSTM'
-		if args.model == 'lstmA':
-			return mls.Sp_GCN_LSTM_A(gcn_args,activation = torch.nn.RReLU()).to(args.device)
-		elif args.model == 'gruA':
-			return mls.Sp_GCN_GRU_A(gcn_args,activation = torch.nn.RReLU()).to(args.device)
-		elif args.model == 'lstmB':
-			return mls.Sp_GCN_LSTM_B(gcn_args,activation = torch.nn.RReLU()).to(args.device)
-		elif args.model == 'gruB':
-			return mls.Sp_GCN_GRU_B(gcn_args,activation = torch.nn.RReLU()).to(args.device)
-		elif args.model == 'egcn':
-			return egcn.EGCN(gcn_args, activation = torch.nn.RReLU()).to(args.device)
-		elif args.model == 'egcn_h':
-			return egcn_h.EGCN(gcn_args, activation = torch.nn.RReLU(), device = args.device)
-		elif args.model == 'egcn_h_gat':
-			return egcn_h.EGCN(gcn_args, activation = torch.nn.RReLU(), device = args.device, gat=True)
-		elif args.model == 'skipfeatsegcn_h':
-			return egcn_h.EGCN(gcn_args, activation = torch.nn.RReLU(), device = args.device, skipfeats=True)
-		elif args.model == 'egcn_o':
-			return egcn_o.EGCN(gcn_args, activation = torch.nn.RReLU(), device = args.device)
-		else:
-			raise NotImplementedError('need to finish modifying the models')
+		raise NotImplementedError('need to finish modifying the models')
 
 def build_classifier(args,tasker):
 	if 'node_cls' == args.task or 'static_node_cls' == args.task:
