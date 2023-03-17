@@ -98,7 +98,7 @@ class GRCU_GAT(torch.nn.Module):
         cell_args.rows = args.in_feats
         cell_args.cols = args.out_feats
 
-        self.evolve_weights = torch.nn.GRUCell(args.in_feats, args.out_feats)
+        self.evolve_weights = torch.nn.GRUCell(args.out_feats, args.in_feats)
         #self.evolve_weights = mat_GRU_cell(cell_args)
 
         self.activation = self.args.activation
@@ -127,7 +127,8 @@ class GRCU_GAT(torch.nn.Module):
             print("GCN ", GCN_weights.shape)
             print("edge index", edge_index.shape)
             node_embs = node_embs_list[t]
-            # print("node_embs", node_embs.shape)
+            
+            print("node_embs", node_embs.shape)
             #first evolve the weights from the initial and use the new weights with the node_embs
             # GCN_weights = self.evolve_weights(GCN_weights,node_embs,mask_list[t])
             GCN_weights = self.evolve_weights(GCN_weights,node_embs)
