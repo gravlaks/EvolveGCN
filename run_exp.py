@@ -2,27 +2,27 @@ import utils as u
 import torch
 import torch.distributed as dist
 import numpy as np
-import time
+# import time
 import random
 
 #datasets
 import bitcoin_dl as bc
-import elliptic_temporal_dl as ell_temp
-import uc_irv_mess_dl as ucim
-import auto_syst_dl as aus
-import sbm_dl as sbm
-import reddit_dl as rdt
+# import elliptic_temporal_dl as ell_temp
+# import uc_irv_mess_dl as ucim
+# import auto_syst_dl as aus
+# import sbm_dl as sbm
+# import reddit_dl as rdt
 
 
 #taskers
 import link_pred_tasker as lpt
-import edge_cls_tasker as ect
-import node_cls_tasker as nct
+# import edge_cls_tasker as ect
+# import node_cls_tasker as nct
 
 #models
 import models as mls
 import egcn_h
-import egcn_o
+# import egcn_o
 
 
 import splitter as sp
@@ -33,19 +33,20 @@ import trainer as tr
 import logger
 
 
-def random_param_value(param, param_min, param_max, type='int'):
-	if str(param) is None or str(param).lower()=='none':
-		if type=='int':
-			return random.randrange(param_min, param_max+1)
-		elif type=='logscale':
-			interval=np.logspace(np.log10(param_min), np.log10(param_max), num=100)
-			return np.random.choice(interval,1)[0]
-		else:
-			return random.uniform(param_min, param_max)
-	else:
-		return param
+# def random_param_value(param, param_min, param_max, type='int'):
+# 	if str(param) is None or str(param).lower()=='none':
+# 		if type=='int':
+# 			return random.randrange(param_min, param_max+1)
+# 		elif type=='logscale':
+# 			interval=np.logspace(np.log10(param_min), np.log10(param_max), num=100)
+# 			return np.random.choice(interval,1)[0]
+# 		else:
+# 			return random.uniform(param_min, param_max)
+# 	else:
+# 		return param
 
-def build_random_hyper_params(args):
+# def build_random_hyper_params(args):
+# 	pass
 	# if args.model == 'all':
 	# 	model_types = ['gcn', 'egcn_o', 'egcn_h', 'gruA', 'gruB','egcn','lstmA', 'lstmB']
 	# 	args.model=model_types[args.rank]
@@ -63,27 +64,27 @@ def build_random_hyper_params(args):
 	# 	model_types = ['gcn', 'gcn', 'skipgcn', 'skipgcn']
 	# 	args.model=model_types[args.rank]
 
-	args.learning_rate =random_param_value(args.learning_rate, args.learning_rate_min, args.learning_rate_max, type='logscale')
+	# args.learning_rate =random_param_value(args.learning_rate, args.learning_rate_min, args.learning_rate_max, type='logscale')
 	# args.adj_mat_time_window = random_param_value(args.adj_mat_time_window, args.adj_mat_time_window_min, args.adj_mat_time_window_max, type='int')
 
-	if args.model == 'gcn':
-		args.num_hist_steps = 0
-	else:
-		args.num_hist_steps = random_param_value(args.num_hist_steps, args.num_hist_steps_min, args.num_hist_steps_max, type='int')
+	# if args.model == 'gcn':
+	# 	args.num_hist_steps = 0
+	# else:
+	# 	args.num_hist_steps = random_param_value(args.num_hist_steps, args.num_hist_steps_min, args.num_hist_steps_max, type='int')
 
-	args.gcn_parameters['feats_per_node'] =random_param_value(args.gcn_parameters['feats_per_node'], args.gcn_parameters['feats_per_node_min'], args.gcn_parameters['feats_per_node_max'], type='int')
-	args.gcn_parameters['layer_1_feats'] =random_param_value(args.gcn_parameters['layer_1_feats'], args.gcn_parameters['layer_1_feats_min'], args.gcn_parameters['layer_1_feats_max'], type='int')
-	if args.gcn_parameters['layer_2_feats_same_as_l1'] or args.gcn_parameters['layer_2_feats_same_as_l1'].lower()=='true':
-		args.gcn_parameters['layer_2_feats'] = args.gcn_parameters['layer_1_feats']
-	else:
-		args.gcn_parameters['layer_2_feats'] =random_param_value(args.gcn_parameters['layer_2_feats'], args.gcn_parameters['layer_1_feats_min'], args.gcn_parameters['layer_1_feats_max'], type='int')
-	args.gcn_parameters['lstm_l1_feats'] =random_param_value(args.gcn_parameters['lstm_l1_feats'], args.gcn_parameters['lstm_l1_feats_min'], args.gcn_parameters['lstm_l1_feats_max'], type='int')
-	if args.gcn_parameters['lstm_l2_feats_same_as_l1'] or args.gcn_parameters['lstm_l2_feats_same_as_l1'].lower()=='true':
-		args.gcn_parameters['lstm_l2_feats'] = args.gcn_parameters['lstm_l1_feats']
-	else:
-		args.gcn_parameters['lstm_l2_feats'] =random_param_value(args.gcn_parameters['lstm_l2_feats'], args.gcn_parameters['lstm_l1_feats_min'], args.gcn_parameters['lstm_l1_feats_max'], type='int')
-	args.gcn_parameters['cls_feats']=random_param_value(args.gcn_parameters['cls_feats'], args.gcn_parameters['cls_feats_min'], args.gcn_parameters['cls_feats_max'], type='int')
-	return args
+	# args.gcn_parameters['feats_per_node'] =random_param_value(args.gcn_parameters['feats_per_node'], args.gcn_parameters['feats_per_node_min'], args.gcn_parameters['feats_per_node_max'], type='int')
+	# args.gcn_parameters['layer_1_feats'] =random_param_value(args.gcn_parameters['layer_1_feats'], args.gcn_parameters['layer_1_feats_min'], args.gcn_parameters['layer_1_feats_max'], type='int')
+	# if args.gcn_parameters['layer_2_feats_same_as_l1'] or args.gcn_parameters['layer_2_feats_same_as_l1'].lower()=='true':
+	# 	args.gcn_parameters['layer_2_feats'] = args.gcn_parameters['layer_1_feats']
+	# else:
+	# 	args.gcn_parameters['layer_2_feats'] =random_param_value(args.gcn_parameters['layer_2_feats'], args.gcn_parameters['layer_1_feats_min'], args.gcn_parameters['layer_1_feats_max'], type='int')
+	# args.gcn_parameters['lstm_l1_feats'] =random_param_value(args.gcn_parameters['lstm_l1_feats'], args.gcn_parameters['lstm_l1_feats_min'], args.gcn_parameters['lstm_l1_feats_max'], type='int')
+	# if args.gcn_parameters['lstm_l2_feats_same_as_l1'] or args.gcn_parameters['lstm_l2_feats_same_as_l1'].lower()=='true':
+	# 	args.gcn_parameters['lstm_l2_feats'] = args.gcn_parameters['lstm_l1_feats']
+	# else:
+	# 	args.gcn_parameters['lstm_l2_feats'] =random_param_value(args.gcn_parameters['lstm_l2_feats'], args.gcn_parameters['lstm_l1_feats_min'], args.gcn_parameters['lstm_l1_feats_max'], type='int')
+	# args.gcn_parameters['cls_feats']=random_param_value(args.gcn_parameters['cls_feats'], args.gcn_parameters['cls_feats_min'], args.gcn_parameters['cls_feats_max'], type='int')
+	# return args
 
 def build_dataset(args):
 	if args.data == 'bitcoinotc' :#or args.data == 'bitcoinalpha':
@@ -165,16 +166,19 @@ def build_gcn(args,tasker):
 		raise NotImplementedError('need to finish modifying the models')
 
 def build_classifier(args,tasker):
-	if 'node_cls' == args.task or 'static_node_cls' == args.task:
-		mult = 1
-	else:
-		mult = 2
-	if 'gru' in args.model or 'lstm' in args.model:
-		in_feats = args.gcn_parameters['lstm_l2_feats'] * mult
-	elif args.model == 'skipfeatsgcn' or args.model == 'skipfeatsegcn_h':
-		in_feats = (args.gcn_parameters['layer_2_feats'] + args.gcn_parameters['feats_per_node']) * mult
-	else:
-		in_feats = args.gcn_parameters['layer_2_feats'] * mult
+	# if 'node_cls' == args.task or 'static_node_cls' == args.task:
+	# 	mult = 1
+	# else:
+	# 	mult = 2
+	# if 'gru' in args.model or 'lstm' in args.model:
+	# 	in_feats = args.gcn_parameters['lstm_l2_feats'] * mult
+	# elif args.model == 'skipfeatsgcn' or args.model == 'skipfeatsegcn_h':
+	# 	in_feats = (args.gcn_parameters['layer_2_feats'] + args.gcn_parameters['feats_per_node']) * mult
+	# else:
+	
+	# link prediction is done with 2 embeddings
+	mult = 2
+	in_feats = args.gcn_parameters['layer_2_feats'] * mult
 
 	return mls.Classifier(args,in_features = in_feats, out_features = tasker.num_classes).to(args.device)
 
@@ -216,7 +220,7 @@ if __name__ == '__main__':
 	args.wsize=wsize
 
 	# Assign the requested random hyper parameters
-	args = build_random_hyper_params(args)
+	#args = build_random_hyper_params(args)
 
 	#build the dataset
 	dataset = build_dataset(args)
