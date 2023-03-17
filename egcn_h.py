@@ -98,7 +98,7 @@ class GRCU_GAT(torch.nn.Module):
         cell_args.rows = args.in_feats
         cell_args.cols = args.out_feats
 
-        self.evolve_weights = torch.nn.GRUCell(args.in_feats, args.in_feats)
+        self.evolve_weights = torch.nn.GRUCell(args.in_feats*args.out_feats, args.in_feats*args.out_feats)
         #self.evolve_weights = mat_GRU_cell(cell_args)
 
         self.activation = self.args.activation
@@ -121,7 +121,7 @@ class GRCU_GAT(torch.nn.Module):
         t.data.uniform_(-stdv,stdv)
 
     def forward(self,A_list,node_embs_list,mask_list, edge_weights):
-        GCN_weights = self.GCN_init_weights
+        GCN_weights = self.GCN_init_weights.flatten()
         out_seq = []
         for t, (edge_index, edge_weight) in enumerate(zip(A_list, edge_weights)):
             print("GCN ", GCN_weights.shape)
@@ -131,7 +131,7 @@ class GRCU_GAT(torch.nn.Module):
             print("node_embs", node_embs.shape)
             #first evolve the weights from the initial and use the new weights with the node_embs
             # GCN_weights = self.evolve_weights(GCN_weights,node_embs,mask_list[t])
-            GCN_weights = self.evolve_weights(GCN_weights,node_embs)
+            GCN_weights = self.evolve_weights(GCN_weights,node_embs).reshape(self.GCN_init_weights.shape)
             print("GCN", GCN_weights.shape)
             #node_embs = self.gat_layer(node_embs, Ahat, GCN_weights)
             node_embs = self.gat_layer(node_embs, edge_index, weights=GCN_weights, edge_weights=edge_weight)
