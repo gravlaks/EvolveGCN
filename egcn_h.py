@@ -130,7 +130,7 @@ class GRCU_GAT(torch.nn.Module):
 
     def forward(self,A_list,node_embs_list,mask_list, edge_weights):
         GCN_weights = self.GCN_init_weights
-        cell_state = torch.zeros((self.GCN_init_weights.flatten().shape))
+        cell_state = torch.zeros((self.GCN_init_weights.flatten().shape)).to_device(self.args.device)
         out_seq = []
         for t, (edge_index, edge_weight) in enumerate(zip(A_list, edge_weights)):
             print("GCN ", GCN_weights.shape)
