@@ -102,7 +102,7 @@ class GRCU_GAT(torch.nn.Module):
         print("GRU input shape",args.in_feats )
         print("Hidden size", hidden_size )
         
-        self.recurrent_unit = "gru"
+        self.recurrent_unit = "lstm"
         if self.recurrent_unit == "gru":
             self.evolve_weights = torch.nn.GRUCell(args.in_feats, args.in_feats*args.out_feats)
         elif self.recurrent_unit == "lstm":
