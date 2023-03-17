@@ -145,11 +145,9 @@ class GRCU_GAT(torch.nn.Module):
             input_GRU = torch.sum(torch.softmax((torch.add(mask, node_embs.t())), axis=1), axis=1)
             
             hidden_GRU = GCN_weights.flatten()
-            # print("input_shape", input_GRU.shape)
-            # print("hidden_GRU", hidden_GRU.shape)
+
 
             GCN_weights = self.evolve_weights(input_GRU, hidden_GRU).reshape(self.GCN_init_weights.shape)
-            print("GCN out", GCN_weights.shape)
             #node_embs = self.gat_layer(node_embs, Ahat, GCN_weights)
             node_embs = self.gat_layer(node_embs, edge_index, weights=GCN_weights, edge_weights=edge_weight)
 
