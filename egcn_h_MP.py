@@ -30,7 +30,7 @@ class GAT_MP(MessagePassing):
         nn.init.xavier_uniform_(self.att_l)
         nn.init.xavier_uniform_(self.att_r)
 
-    def forward(self, x, edge_index, size = None, weights=None):
+    def forward(self, x, edge_index, size = None, weights=None, edge_weights = None):
         
         H, C = self.heads, self.out_channels
         N = x.shape[0]
