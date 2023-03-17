@@ -113,6 +113,7 @@ class Link_Pred_Tasker():
 		hist_ndFeats_list = []
 		hist_mask_list = []
 		existing_nodes = []
+		hist_weights_list = []
 		for i in range(idx - self.args.num_hist_steps, idx+1):
 			cur_adj = tu.get_sp_adj(edges = self.data.edges, 
 								   time = i,
