@@ -106,7 +106,7 @@ class GRCU_GAT(torch.nn.Module):
         if self.recurrent_unit == "gru":
             self.evolve_weights = torch.nn.GRUCell(args.in_feats, args.in_feats*args.out_feats)
         elif self.recurrent_unit == "lstm":
-            self.evolve_weights = torch.nn.LSTM(args.in_feats, args.in_feats*args.out_feats)
+            self.evolve_weights = torch.nn.LSTMCell(args.in_feats, args.in_feats*args.out_feats)
         #self.evolve_weights = mat_GRU_cell(cell_args)
 
         self.activation = self.args.activation
