@@ -100,7 +100,7 @@ class Trainer():
                         predictions, nodes_embs = self.predict(s.hist_adj_list,
                                                                                                    s.hist_ndFeats_list,
                                                                                                    s.label_sp['idx'],
-                                                                                                   s.node_mask_list
+                                                                                                   s.node_mask_list,
                                                                                                    s.hist_weights_list)
 
                         loss = self.comp_loss(predictions,s.label_sp['vals'])
