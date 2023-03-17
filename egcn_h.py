@@ -125,7 +125,7 @@ class GRCU_GAT(torch.nn.Module):
         t.data.uniform_(-stdv,stdv)
 
     def forward(self,A_list,node_embs_list,mask_list, edge_weights):
-        GCN_weights = self.GCN_init_weights.flatten()
+        GCN_weights = self.GCN_init_weights
         out_seq = []
         for t, (edge_index, edge_weight) in enumerate(zip(A_list, edge_weights)):
             print("GCN ", GCN_weights.shape)
@@ -141,7 +141,7 @@ class GRCU_GAT(torch.nn.Module):
             # GCN_weights = self.evolve_weights(GCN_weights,node_embs,mask_list[t])
             print("mask_list", mask_list[t].shape, mask_list[t][0])
             input_GRU = torch.sum((node_embs.t()*mask.flatten()).t(), axis=0)
-            hidden_GRU = GCN_weights
+            hidden_GRU = GCN_weights.flatten()
             print("input_shape", input_GRU.shape)
             print("hidden_GRU", hidden_GRU.shape)
 
