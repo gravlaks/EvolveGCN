@@ -35,32 +35,39 @@ class GAT_MP(MessagePassing):
         H, C = self.heads, self.out_channels
         N = x.shape[0]
         
+        # Project node embeddings to feasible dimension, split into multiple heads
         h_prime = x.matmul(weights).view((N, H, C//H))
         
+        # Take dot product between attention vector and all node embeddings,
+        # (both for left and right nodes)
         alpha_l = torch.sum(h_prime*self.att_l, dim=-1)
         alpha_r = torch.sum(h_prime*self.att_r, dim=-1)
 
-        # print("x", x.shape)
-        # print("edge_index", edge_index.shape)
-        # print("N, H, C", N, H, C)
-        # print("h_prime", h_prime.shape)
-        
+        # Propagate embeddings
         out = self.propagate(edge_index=edge_index, x=(h_prime, h_prime), alpha=(alpha_l, alpha_r), size=size, edge_weights=edge_weights)
         
+        # Bring back to original shape
         out = out.view((N, C))
         
-        # print("out", out.shape)
         return out
 
 
     def message(self,index, x_j, alpha_j, alpha_i, ptr, size_i, edge_weights):
 
        
-
+        # Add left and right dot product
         final_attention_weights = torch.add(alpha_i, alpha_j)
+
+        # Pass attention_weights through relu, then multiply each with respective edge weight
         att_unnormalized = torch.mul(F.leaky_relu(final_attention_weights).t(), edge_weights).t()
+        
+        # Normalize along neighbour nodes dimension
         att_weights = torch_geometric.utils.softmax(att_unnormalized, index=index, num_nodes=size_i, ptr=ptr, dim=-2)
+        
+        # Dropout layer for regularization
         att_weights = torch.nn.functional.dropout(att_weights, p=self.dropout)
+
+        # Multiply embeddings with attention weights
         out = x_j*att_weights.unsqueeze(-1)
 
         return out
@@ -70,6 +77,8 @@ class GAT_MP(MessagePassing):
 
         
         node_dim = self.node_dim
+
+        # Sum all neighbouring edges as output for network
         out = torch_scatter.scatter(inputs, index, dim=node_dim, reduce="sum")
 
         return out
