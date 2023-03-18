@@ -10,7 +10,6 @@ use_cuda: True
 use_logfile: False
 
 model: egcn_h_gat
-recurrent_unit: lstm # gru
 task: link_pred # link_pred edge_cls
 
 class_weights: [ 0.05, 0.95]
@@ -47,6 +46,7 @@ data_loading_params:
   num_workers: 0
 
 gcn_parameters:
+  recurrent_unit: lstm # gru
   feats_per_node: 100
   feats_per_node_min: 50
   feats_per_node_max: 256

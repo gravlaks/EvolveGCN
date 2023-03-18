@@ -125,7 +125,7 @@ class MP(MessagePassing):
         self.lin_l.reset_parameters()
         self.lin_r.reset_parameters()
 
-    def forward(self, x, edge_index, weights, size = None):
+    def forward(self, x, edge_index, weights, size = None, edge_weights=None):
 
         out = self.propagate(edge_index, size=size, x = (x, x))
         skip = x.matmul(weights) #self.lin_r(x) 

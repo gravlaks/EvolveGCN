@@ -140,8 +140,8 @@ class GRCU_GAT(torch.nn.Module):
                 GCN_weights, cell_state = self.evolve_weights(input_GRU, (hidden_GRU, cell_state))
 
             GCN_weights = GCN_weights.reshape(self.GCN_init_weights.shape)
-            
-            node_embs = self.args.activation(self.gat_layer(node_embs, edge_index, weights=GCN_weights, edge_weights=edge_weight))
+            node_embs = self.conv(node_embs, edge_index, weights=GCN_weights, edge_weights=edge_weight)
+            node_embs = self.args.activation(node_embs)
 
             out_seq.append(node_embs)
             
