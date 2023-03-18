@@ -56,10 +56,9 @@ class GRCU(torch.nn.Module):
 
         hidden_size =  args.in_feats*args.out_feats
         
-        self.recurrent_unit = "lstm"
-        if self.recurrent_unit == "gru":
+        if recurrent_unit == "gru":
             self.evolve_weights = torch.nn.GRUCell(args.in_feats, hidden_size)
-        elif self.recurrent_unit == "lstm":
+        elif recurrent_unit == "lstm":
             self.evolve_weights = torch.nn.LSTMCell(args.in_feats, hidden_size)
         #self.evolve_weights = mat_GRU_cell(cell_args)
 
