@@ -36,10 +36,7 @@ class EGCN(torch.nn.Module):
         node_feats= Nodes_list[-1]
 
         for unit in self.GRCU_layers:
-            if self.gat:
-                Nodes_list = unit(A_list,Nodes_list,nodes_mask_list, edge_weights)
-            else:
-                Nodes_list = unit(A_list,Nodes_list,nodes_mask_list)
+            Nodes_list = unit(A_list,Nodes_list,nodes_mask_list, edge_weights)
 
         out = Nodes_list[-1]
         if self.skipfeats:
@@ -99,9 +96,9 @@ class GRCU_GAT(torch.nn.Module):
         
         self.recurrent_unit = "lstm"
         if self.recurrent_unit == "gru":
-            self.evolve_weights = torch.nn.GRUCell(args.in_feats, args.in_feats*args.out_feats)
+            self.evolve_weights = torch.nn.GRUCell(args.in_feats, hidden_size)
         elif self.recurrent_unit == "lstm":
-            self.evolve_weights = torch.nn.LSTMCell(args.in_feats, args.in_feats*args.out_feats)
+            self.evolve_weights = torch.nn.LSTMCell(args.in_feats, hidden_size)
         #self.evolve_weights = mat_GRU_cell(cell_args)
 
         self.GCN_init_weights = Parameter(torch.Tensor(self.args.in_feats,self.args.out_feats))
