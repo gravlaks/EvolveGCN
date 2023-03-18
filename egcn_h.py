@@ -134,11 +134,10 @@ class GRCU_GAT(torch.nn.Module):
         cell_state = torch.zeros((self.GCN_init_weights.flatten().shape)).to(self.args.device)
         out_seq = []
         for t, (edge_index, edge_weight) in enumerate(zip(A_list, edge_weights)):
-            print("GCN ", GCN_weights.shape)
-            print("edge index", edge_index.shape)
-            print(type(node_embs_list[t]))
-            print(type(mask_list[t]))
-            node_embs = node_embs_list[t].to_dense()
+            # print("GCN ", GCN_weights.shape)
+            # print("edge index", edge_index.shape)
+            # print(type(node_embs_list[t]))
+            # print(type(mask_list[t]))
             
             # mask = mask_list[t].to_dense()
             
@@ -150,8 +149,8 @@ class GRCU_GAT(torch.nn.Module):
 
             input_GRU = torch.sum(torch.mul(torch.softmax(mask, dim=0), node_embs.t()), axis=1)
             hidden_GRU = GCN_weights.flatten()
-            print("input", input_GRU.shape)
-            print("hidden", hidden_GRU.shape)
+            # print("input", input_GRU.shape)
+            # print("hidden", hidden_GRU.shape)
             
             if self.recurrent_unit == "gru":
                 GCN_weights = self.evolve_weights(input_GRU, hidden_GRU)
