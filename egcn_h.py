@@ -24,7 +24,7 @@ class EGCN(torch.nn.Module):
             GRCU_args = u.Namespace({'in_feats' : feats[i-1],
                                      'out_feats': feats[i],
                                      'activation': activation, 
-                                     'device'=device})
+                                     'device':device})
             if gat:
                 grcu_i = GRCU_GAT(GRCU_args)
             else:
