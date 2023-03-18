@@ -62,7 +62,7 @@ gcn_parameters:
   lstm_l2_layers: 1 # only used with both sp_lstm_A_trainer and sp_lstm_B_trainer
   lstm_l2_feats: None # only used with both sp_lstm_A_trainer and sp_lstm_B_trainer
   lstm_l2_feats_same_as_l1: True
-  cls_feats: 100 # Hidden size of the classifier
+  cls_feats: 400 # Hidden size of the classifier
   cls_feats_min: 50
   cls_feats_max: 500
 comments:
