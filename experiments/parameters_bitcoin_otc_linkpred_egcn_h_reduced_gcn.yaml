@@ -9,7 +9,7 @@ bitcoinotc_args:
 use_cuda: True
 use_logfile: False
 
-model: egcn_h_gcn
+model: egcn_h
 task: link_pred # link_pred edge_cls
 
 class_weights: [ 0.05, 0.95]
