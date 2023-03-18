@@ -25,10 +25,7 @@ class EGCN(torch.nn.Module):
                                      'out_feats': feats[i],
                                      'activation': activation, 
                                      'device':device})
-            if gat:
-                grcu_i = GRCU_GAT(GRCU_args, gat, args.recurrent_unit)
-            else:
-                grcu_i = GRCU(GRCU_args)
+            grcu_i = GRCU_GAT(GRCU_args, gat, args.recurrent_unit)
             self.GRCU_layers.append(grcu_i.to(self.device))
             self._parameters.extend(list(self.GRCU_layers[-1].parameters()))
 
