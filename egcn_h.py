@@ -26,10 +26,9 @@ class EGCN(torch.nn.Module):
                                      'activation': activation, 
                                      'device':device})
             if gat:
-                grcu_i = GRCU_GAT(GRCU_args)
+                grcu_i = GRCU_GAT(GRCU_args, gat, args.recurrent_unit)
             else:
                 grcu_i = GRCU(GRCU_args)
-            #print (i,'grcu_i', grcu_i)
             self.GRCU_layers.append(grcu_i.to(self.device))
             self._parameters.extend(list(self.GRCU_layers[-1].parameters()))
 
@@ -92,7 +91,7 @@ class GRCU(torch.nn.Module):
 
 
 class GRCU_GAT(torch.nn.Module):
-    def __init__(self,args):
+    def __init__(self,args, gat=True, recurrent_unit="gru"):
         super().__init__()
         self.args = args
         cell_args = u.Namespace({})
@@ -100,8 +99,6 @@ class GRCU_GAT(torch.nn.Module):
         cell_args.cols = args.out_feats
 
         hidden_size =  args.in_feats*args.out_feats
-        print("GRU input shape",args.in_feats )
-        print("Hidden size", hidden_size )
         
         self.recurrent_unit = "lstm"
         if self.recurrent_unit == "gru":
@@ -110,19 +107,15 @@ class GRCU_GAT(torch.nn.Module):
             self.evolve_weights = torch.nn.LSTMCell(args.in_feats, args.in_feats*args.out_feats)
         #self.evolve_weights = mat_GRU_cell(cell_args)
 
-        self.activation = self.args.activation
         self.GCN_init_weights = Parameter(torch.Tensor(self.args.in_feats,self.args.out_feats))
+        self.cell_state_init = torch.zeros((self.GCN_init_weights.flatten().shape)).to(self.args.device)
+
         self.reset_param(self.GCN_init_weights)
 
-        self.alpha = 0.001
-
-        self.a_i = Parameter(torch.Tensor(2, 1))
-        u.reset_param(self.a_i)
-        self.layers = nn.ModuleList()
-
-        
-        self.gat_layer = GAT_MP(out_channels=self.args.out_feats)
-        
+        if gat:
+            self.conv = GAT_MP(out_channels=self.args.out_feats)
+        else:
+            self.conv = MP(in_channels = self.args.in_feats, out_channels=self.args.out_feats)
 
     def reset_param(self,t):
         #Initialize based on the number of columns
@@ -131,34 +124,24 @@ class GRCU_GAT(torch.nn.Module):
 
     def forward(self,A_list,node_embs_list,mask_list, edge_weights):
         GCN_weights = self.GCN_init_weights
-        cell_state = torch.zeros((self.GCN_init_weights.flatten().shape)).to(self.args.device)
+        cell_state = self.cell_state_init
         out_seq = []
         for t, (edge_index, edge_weight) in enumerate(zip(A_list, edge_weights)):
-            # print("GCN ", GCN_weights.shape)
-            # print("edge index", edge_index.shape)
-            # print(type(node_embs_list[t]))
-            # print(type(mask_list[t]))
-            
-            # mask = mask_list[t].to_dense()
-            
-            #first evolve the weights from the initial and use the new weights with the node_embs
-            # GCN_weights = self.evolve_weights(GCN_weights,node_embs,mask_list[t])
+           
             mask = mask_list[t].flatten()
             node_embs = node_embs_list[t].to_dense()
-            # print("node_embs", node_embs.shape)
 
             input_GRU = torch.sum(torch.mul(torch.softmax(mask, dim=0), node_embs.t()), axis=1)
             hidden_GRU = GCN_weights.flatten()
-            # print("input", input_GRU.shape)
-            # print("hidden", hidden_GRU.shape)
             
             if self.recurrent_unit == "gru":
                 GCN_weights = self.evolve_weights(input_GRU, hidden_GRU)
             elif self.recurrent_unit == "lstm":
                 GCN_weights, cell_state = self.evolve_weights(input_GRU, (hidden_GRU, cell_state))
+
             GCN_weights = GCN_weights.reshape(self.GCN_init_weights.shape)
-            #node_embs = self.gat_layer(node_embs, Ahat, GCN_weights)
-            node_embs = self.gat_layer(node_embs, edge_index, weights=GCN_weights, edge_weights=edge_weight)
+            
+            node_embs = self.args.activation(self.gat_layer(node_embs, edge_index, weights=GCN_weights, edge_weights=edge_weight))
 
             out_seq.append(node_embs)
             
