@@ -4,7 +4,7 @@ from torch.nn.parameter import Parameter
 
 import torch.nn as nn
 import math
-from egcn_h_MP import GAT, GAT_MP, MP
+from egcn_h_MP import GAT_MP, MP
 from torch.nn import functional as F
 
 class EGCN(torch.nn.Module):
@@ -19,7 +19,6 @@ class EGCN(torch.nn.Module):
         self.skipfeats = skipfeats
         self.GRCU_layers = []
         self._parameters = nn.ParameterList()
-        self.gat = gat
         for i in range(1,len(feats)):
             GRCU_args = u.Namespace({'in_feats' : feats[i-1],
                                      'out_feats': feats[i],
