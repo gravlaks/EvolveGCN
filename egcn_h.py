@@ -154,10 +154,10 @@ class GRCU_GAT(torch.nn.Module):
             print("hidden", hidden_GRU.shape)
             
             if self.recurrent_unit == "gru":
-                GCN_weights = self.evolve_weights(input_GRU, hidden_GRU).reshape(self.GCN_init_weights.shape)
+                GCN_weights = self.evolve_weights(input_GRU, hidden_GRU)
             elif self.recurrent_unit == "lstm":
-                GCN_weights, cell_state = self.evolve_weights(input_GRU, (hidden_GRU, cell_state)).reshape(self.GCN_init_weights.shape)
-
+                GCN_weights, cell_state = self.evolve_weights(input_GRU, (hidden_GRU, cell_state))
+            GCN_weights = GCN_weights.reshape(self.GCN_init_weights.shape)
             #node_embs = self.gat_layer(node_embs, Ahat, GCN_weights)
             node_embs = self.gat_layer(node_embs, edge_index, weights=GCN_weights, edge_weights=edge_weight)
 
