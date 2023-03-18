@@ -25,7 +25,7 @@ class EGCN(torch.nn.Module):
                                      'out_feats': feats[i],
                                      'activation': activation, 
                                      'device':device})
-            grcu_i = GRCU_GAT(GRCU_args, gat, args.recurrent_unit)
+            grcu_i = GRCU(GRCU_args, gat, args.recurrent_unit)
             self.GRCU_layers.append(grcu_i.to(self.device))
             self._parameters.extend(list(self.GRCU_layers[-1].parameters()))
 
@@ -44,47 +44,10 @@ class EGCN(torch.nn.Module):
         return out
 
 
+
+
+
 class GRCU(torch.nn.Module):
-    def __init__(self,args):
-        super().__init__()
-        self.args = args
-        cell_args = u.Namespace({})
-        cell_args.rows = args.in_feats
-        cell_args.cols = args.out_feats
-
-        self.evolve_weights = mat_GRU_cell(cell_args)
-
-        self.activation = self.args.activation
-        self.GCN_init_weights = Parameter(torch.Tensor(self.args.in_feats,self.args.out_feats))
-        self.reset_param(self.GCN_init_weights)
-        self.layers = nn.ModuleList()
-
-        
-        self.mp_layer = MP(in_channels = self.args.in_feats, out_channels=self.args.out_feats)
-
-    def reset_param(self,t):
-        #Initialize based on the number of columns
-        stdv = 1. / math.sqrt(t.size(1))
-        t.data.uniform_(-stdv,stdv)
-
-    def forward(self,A_list,node_embs_list,mask_list):
-        GCN_weights = self.GCN_init_weights
-        out_seq = []
-        for t, edge_index in enumerate(A_list):
-            node_embs = node_embs_list[t]
-            #first evolve the weights from the initial and use the new weights with the node_embs
-            GCN_weights = self.evolve_weights(GCN_weights,node_embs,mask_list[t])
-            # node_embs = self.activation(Ahat.matmul(node_embs.matmul(GCN_weights)))
-            node_embs = self.mp_layer(node_embs, edge_index, weights=GCN_weights)
-
-            out_seq.append(node_embs)
-
-        return out_seq
-    
-
-
-
-class GRCU_GAT(torch.nn.Module):
     def __init__(self,args, gat=True, recurrent_unit="gru"):
         super().__init__()
         self.args = args
