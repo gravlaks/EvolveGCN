@@ -50,7 +50,7 @@ gcn_parameters:
   feats_per_node: 100
   feats_per_node_min: 50
   feats_per_node_max: 256
-  layer_1_feats: 16
+  layer_1_feats: 64
   layer_1_feats_min: 21
   layer_1_feats_max: 200
   layer_2_feats: 16
@@ -64,7 +64,7 @@ gcn_parameters:
   lstm_l2_layers: 1 # only used with both sp_lstm_A_trainer and sp_lstm_B_trainer
   lstm_l2_feats: None # only used with both sp_lstm_A_trainer and sp_lstm_B_trainer
   lstm_l2_feats_same_as_l1: True
-  cls_feats: 400 # Hidden size of the classifier
+  cls_feats: 100 # Hidden size of the classifier
   cls_feats_min: 51
   cls_feats_max: 500
 comments:
