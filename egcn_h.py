@@ -23,7 +23,8 @@ class EGCN(torch.nn.Module):
         for i in range(1,len(feats)):
             GRCU_args = u.Namespace({'in_feats' : feats[i-1],
                                      'out_feats': feats[i],
-                                     'activation': activation})
+                                     'activation': activation, 
+                                     'device'=device})
             if gat:
                 grcu_i = GRCU_GAT(GRCU_args)
             else:
@@ -130,7 +131,7 @@ class GRCU_GAT(torch.nn.Module):
 
     def forward(self,A_list,node_embs_list,mask_list, edge_weights):
         GCN_weights = self.GCN_init_weights
-        cell_state = torch.zeros((self.GCN_init_weights.flatten().shape)).to(self.device)
+        cell_state = torch.zeros((self.GCN_init_weights.flatten().shape)).to(self.args.device)
         out_seq = []
         for t, (edge_index, edge_weight) in enumerate(zip(A_list, edge_weights)):
             print("GCN ", GCN_weights.shape)
