@@ -7,7 +7,7 @@ bitcoinotc_args:
   feats_per_node: 3
 
 use_cuda: True
-use_logfile: False
+use_logfile: True
 
 model: egcn_h_gat
 task: link_pred # link_pred edge_cls
@@ -46,7 +46,7 @@ data_loading_params:
   num_workers: 0
 
 gcn_parameters:
-  recurrent_unit: lstm # gru
+  recurrent_unit: gru # gru
   feats_per_node: 100
   feats_per_node_min: 50
   feats_per_node_max: 256
