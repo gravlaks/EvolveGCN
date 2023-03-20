@@ -46,7 +46,7 @@ data_loading_params:
   num_workers: 0
 
 gcn_parameters:
-  recurrent_unit: gru # gru
+  recurrent_unit: lstm # gru
   feats_per_node: 100
   feats_per_node_min: 50
   feats_per_node_max: 256
