@@ -2,7 +2,7 @@ data: bitcoinotc  # bitcoinalpha bitcoinotc
 
 bitcoinotc_args:
   folder: ./data/
-  edges_file: bitcoin_updated.csv
+  edges_file: soc-sign-bitcoinotc.csv
   aggr_time: 1200000 #three weeks in seconds: 1200000
   feats_per_node: 3
 
