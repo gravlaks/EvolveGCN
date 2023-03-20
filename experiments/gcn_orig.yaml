@@ -2,14 +2,14 @@ data: bitcoinotc  # bitcoinalpha bitcoinotc
 
 bitcoinotc_args:
   folder: ./data/
-  edges_file: soc-sign-bitcoinotc.csv
+  edges_file: bitcoin_updated.csv
   aggr_time: 1200000 #three weeks in seconds: 1200000
   feats_per_node: 3
 
 use_cuda: True
 use_logfile: True
 
-model: egcn_h_gat
+model: egcn_h
 task: link_pred # link_pred edge_cls
 
 class_weights: [ 0.05, 0.95]
@@ -46,14 +46,14 @@ data_loading_params:
   num_workers: 0
 
 gcn_parameters:
-  recurrent_unit: gru # gru
-  feats_per_node: 100
+  recurrent_unit: original # gru
+  feats_per_node: 30
   feats_per_node_min: 50
   feats_per_node_max: 256
-  layer_1_feats: 64
+  layer_1_feats: 16
   layer_1_feats_min: 21
   layer_1_feats_max: 200
-  layer_2_feats: 16
+  layer_2_feats: 8
   layer_2_feats_same_as_l1: True
   k_top_grcu: 200
   num_layers: 2
