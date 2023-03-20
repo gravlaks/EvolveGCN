@@ -60,6 +60,8 @@ class GRCU(torch.nn.Module):
             self.evolve_weights = torch.nn.GRUCell(args.in_feats, hidden_size)
         elif recurrent_unit == "lstm":
             self.evolve_weights = torch.nn.LSTMCell(args.in_feats, hidden_size)
+        elif recurrent_unit == "original":
+            self.evolve_weights = mat_GRU_cell(cell_args)
         #self.evolve_weights = mat_GRU_cell(cell_args)
 
         self.GCN_init_weights = Parameter(torch.Tensor(self.args.in_feats,self.args.out_feats))
@@ -82,19 +84,24 @@ class GRCU(torch.nn.Module):
         cell_state = self.cell_state_init
         out_seq = []
         for t, (edge_index, edge_weight) in enumerate(zip(A_list, edge_weights)):
-           
-            mask = mask_list[t].flatten()
             node_embs = node_embs_list[t].to_dense()
+            if self.recurrent_unit == "original":
+                GCN_weights = self.evolve_weights(GCN_weights,node_embs,mask_list[t])
+                
+            else:
+           
+                mask = mask_list[t].flatten()
+                #node_embs = node_embs_list[t].to_dense()
 
-            input_GRU = torch.sum(torch.mul(torch.softmax(mask, dim=0), node_embs.t()), axis=1)
-            hidden_GRU = GCN_weights.flatten()
-            
-            if self.recurrent_unit == "gru":
-                GCN_weights = self.evolve_weights(input_GRU, hidden_GRU)
-            elif self.recurrent_unit == "lstm":
-                GCN_weights, cell_state = self.evolve_weights(input_GRU, (hidden_GRU, cell_state))
+                input_GRU = torch.sum(torch.mul(torch.softmax(mask, dim=0), node_embs.t()), axis=1)
+                hidden_GRU = GCN_weights.flatten()
+                
+                if self.recurrent_unit == "gru":
+                    GCN_weights = self.evolve_weights(input_GRU, hidden_GRU)
+                elif self.recurrent_unit == "lstm":
+                    GCN_weights, cell_state = self.evolve_weights(input_GRU, (hidden_GRU, cell_state))
 
-            GCN_weights = GCN_weights.reshape(self.GCN_init_weights.shape)
+                GCN_weights = GCN_weights.reshape(self.GCN_init_weights.shape)
             node_embs = self.conv(node_embs, edge_index, weights=GCN_weights, edge_weights=edge_weight)
             node_embs = self.args.activation(node_embs)
 
